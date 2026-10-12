@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f1117">
+<title>Plant Site Registers</title>
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1117;--bg2:#181c25;--bg3:#1f2332;--bg4:#252a38;
+  --border:#2a3045;--border2:#354060;
+  --amber:#f59e0b;--amber2:#d97706;--amber-dim:#f59e0b22;
+  --green:#10b981;--green-dim:#10b98118;
+  --red:#f43f5e;--red-dim:#f43f5e18;
+  --blue:#3b82f6;--blue-dim:#3b82f618;
+  --text:#e8eaf0;--text2:#8892a8;--text3:#4a5568;
+  --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;padding-top:var(--safe-top)}
+.app{padding:10px;max-width:1000px;margin:0 auto;padding-bottom:calc(60px + var(--safe-bottom))}
+
+/* BOTTOM NAV for mobile */
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0 calc(6px + var(--safe-bottom));z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 1px;font-size:9px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);font-family:var(--font-body);transition:color 0.15s;letter-spacing:0.1px}
+.nav-btn .nav-icon{font-size:17px;line-height:1}
+.nav-btn.active{color:var(--amber)}
+
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+
+/* PAGE HEADER */
+.page-header{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.page-title{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.page-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 12px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.15s;letter-spacing:0.2px;flex-shrink:0}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* SECTION */
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-bottom:10px}
+.section-title{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:9px;text-transform:uppercase;letter-spacing:1px;font-family:var(--font-mono)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;align-items:end}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono)}
+.fg input,.fg select{font-size:14px;padding:9px 10px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text);width:100%;font-family:var(--font-body);transition:border-color 0.15s;-webkit-appearance:none;appearance:none}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--amber);background:var(--bg4)}
+.fg select option{background:var(--bg3)}
+
+/* BUTTONS */
+.btn{border-radius:var(--r);padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid;font-family:var(--font-body);letter-spacing:0.3px;transition:all 0.15s;-webkit-appearance:none}
+.btn-amber{background:var(--amber);color:#000;border-color:var(--amber2)}
+.btn-green{background:var(--green-dim);color:var(--green);border-color:var(--green)}
+.btn-red{background:var(--red-dim);color:var(--red);border-color:var(--red)}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2)}
+.btn-del{background:none;color:var(--red);border:1px solid var(--red);border-radius:var(--r);padding:3px 8px;font-size:11px;cursor:pointer;opacity:0.7}
+.btn-del:active{opacity:1}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:7px;margin-bottom:10px}
+.sc{background:var(--bg2);border-radius:var(--r);padding:10px 11px;border:1px solid var(--border);position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border)}
+.sc.green::before{background:var(--green)}.sc.red::before{background:var(--red)}
+.sc.amber::before{background:var(--amber)}.sc.blue::before{background:var(--blue)}
+.sc.green .sv{color:var(--green)}.sc.red .sv{color:var(--red)}
+.sc.amber .sv{color:var(--amber)}.sc.blue .sv{color:var(--blue)}
+.sl{font-size:9px;color:var(--text2);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono)}
+.sv{font-size:17px;font-weight:600;color:var(--text);line-height:1;font-family:var(--font-mono)}
+.su{font-size:9px;color:var(--text2);margin-left:1px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--border)}
+.t{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
+.t th{text-align:left;padding:8px 9px;border-bottom:1px solid var(--border);font-weight:600;color:var(--text3);font-size:10px;white-space:nowrap;background:var(--bg3);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono)}
+.t td{padding:7px 9px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap;font-family:var(--font-mono);font-size:12px}
+.t tbody tr:last-child td{border-bottom:none}
+.empty-msg{text-align:center;color:var(--text3);font-size:12px;padding:24px;font-family:var(--font-mono)}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.3px;font-family:var(--font-mono)}
+.b-amber{background:var(--amber-dim);color:var(--amber);border:1px solid #f59e0b44}
+.b-green{background:var(--green-dim);color:var(--green);border:1px solid #10b98144}
+.b-red{background:var(--red-dim);color:var(--red);border:1px solid #f43f5e44}
+.b-blue{background:var(--blue-dim);color:var(--blue);border:1px solid #3b82f644}
+.b-purple{background:#7c3aed18;color:#a78bfa;border:1px solid #7c3aed44}
+.b-teal{background:#0891b218;color:#22d3ee;border:1px solid #0891b244}
+.b-gray{background:#ffffff0a;color:var(--text2);border:1px solid var(--border2)}
+.b-in{background:var(--green-dim);color:var(--green);border:1px solid #10b98144}
+.b-out{background:var(--red-dim);color:var(--red);border:1px solid #f43f5e44}
+.b-cash{background:var(--amber-dim);color:var(--amber);border:1px solid #f59e0b44}
+.b-online{background:var(--blue-dim);color:var(--blue);border:1px solid #3b82f644}
+.mat-DBM{background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f644}
+.mat-BM{background:#064e3b;color:#34d399;border:1px solid #10b98144}
+.mat-SDBC{background:#7c1d1d;color:#fca5a5;border:1px solid #f43f5e44}
+.mat-BUSG{background:#451a03;color:#fcd34d;border:1px solid #f59e0b44}
+.mat-BC{background:#14532d;color:#86efac;border:1px solid #22c55e44}
+.mat-OGPC{background:#3b1f5e;color:#c4b5fd;border:1px solid #7c3aed44}
+.mat-Sealcoat{background:#164e63;color:#67e8f9;border:1px solid #0891b244}
+
+/* BAR */
+.bar-wrap{background:var(--bg2);border-radius:var(--r);padding:11px 13px;margin-bottom:10px;border:1px solid var(--border)}
+.bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:7px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.5px}
+.bar-track{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.bar-fill{height:6px;border-radius:3px;background:var(--green);transition:width 0.5s}
+.bar-fill.low{background:var(--red)}.bar-fill.mid{background:var(--amber)}
+
+/* TOGGLE */
+.toggle-group{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content}
+.tgl{padding:8px 20px;font-size:13px;cursor:pointer;background:transparent;color:var(--text2);border:none;font-weight:500;font-family:var(--font-body);transition:all 0.15s}
+.tgl.inc{background:var(--green-dim);color:var(--green)}
+.tgl.exp{background:var(--red-dim);color:var(--red)}
+
+/* SUB SECTION */
+.sub-section{background:var(--bg3);border-radius:var(--r);padding:12px;margin-top:10px;border:1px solid var(--border)}
+
+/* WORK CARD */
+.work-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:13px;margin-bottom:9px;transition:border-color 0.15s}
+.wc-name{font-size:14px;font-weight:600;color:var(--text);font-family:var(--font-head)}
+.wc-meta{font-size:11px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+
+/* FILTER BAR */
+.filter-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:10px}
+
+/* BITU GRID */
+.bitu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:7px}
+.bprow{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border)}
+.fixed-tag{font-size:9px;background:var(--green-dim);color:var(--green);padding:2px 5px;border-radius:4px;margin-left:4px;font-family:var(--font-mono)}
+.bprow input{width:58px;font-size:13px;padding:4px 7px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg4);color:var(--text);text-align:center;font-family:var(--font-mono)}
+
+/* ROW COLORS */
+.row-inc td{background:#10b98108}
+.row-exp td{background:#f43f5e08}
+.bal-pos{color:var(--green);font-weight:600}
+.bal-neg{color:var(--red);font-weight:600}
+.total-row td{font-weight:600;background:var(--bg3);border-top:1px solid var(--border2);color:var(--text)}
+
+/* HOME CARDS */
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px;margin-bottom:12px}
+.home-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.home-card:active{transform:scale(0.97);border-color:var(--amber)}
+.hc-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-family:var(--font-mono);margin-bottom:6px}
+.hc-title{font-size:14px;font-weight:700;font-family:var(--font-head);margin-bottom:3px}
+.hc-sub{font-size:11px;color:var(--text2);line-height:1.4}
+.hc-stat{font-size:12px;font-weight:600;margin-top:8px;color:var(--amber);font-family:var(--font-mono)}
+
+/* NW CARD */
+.nw-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px}
+
+/* CHIPS */
+.chip-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all 0.15s;font-family:var(--font-mono)}
+.chip.on{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+
+/* REPORT */
+.rpt-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:var(--r);margin-bottom:5px;background:var(--bg3)}
+.rpt-bar{flex:1;margin:0 10px;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.rpt-fill{height:6px;border-radius:3px;background:var(--green)}
+
+/* DRIVER CARDS */
+.driver-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-bottom:8px}
+.driver-card.expanded{border-color:var(--amber)}
+.dc-top{display:flex;align-items:center;gap:10px;cursor:pointer}
+.dc-avatar{width:34px;height:34px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0;font-family:var(--font-mono)}
+.dc-name{font-size:13px;font-weight:600;flex:1;color:var(--text)}
+.dc-amt{font-size:14px;font-weight:700;color:var(--red);font-family:var(--font-mono)}
+.dc-trips{font-size:10px;color:var(--text2);font-family:var(--font-mono)}
+.dc-chevron{font-size:10px;color:var(--text3);transition:transform 0.2s;margin-left:5px}
+.dc-chevron.open{transform:rotate(90deg)}
+.dbar-track{height:4px;background:var(--bg4);border-radius:2px;margin:7px 0 2px;overflow:hidden}
+.dbar-fill{height:4px;border-radius:2px;background:var(--red)}
+.dc-detail{display:none;padding-top:10px;border-top:1px solid var(--border);margin-top:9px}
+.dc-detail.open{display:block}
+.sort-btn{padding:4px 10px;border-radius:20px;font-size:10px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-family:var(--font-mono);transition:all 0.15s}
+.sort-btn.on{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+.bitu-ref{font-size:10px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:9px;padding:7px 11px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border);font-family:var(--font-mono)}
+.bitu-ref b{color:var(--amber)}
+
+/* TOAST */
+.toast{position:fixed;top:calc(var(--safe-top) + 12px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--amber);color:var(--amber);padding:8px 18px;border-radius:20px;font-size:12px;font-family:var(--font-mono);z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.screen.active{animation:fadeIn 0.2s ease}
+.tab-panel.active{animation:fadeIn 0.15s ease}
+
+/* SAVE INDICATOR */
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;opacity:0;transition:opacity 0.3s}
+.save-dot.show{opacity:1}
+
+input[type="date"],input[type="time"]{color-scheme:dark}
+/* PDF OVERLAY */
+#_pdfOverlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#_pdfBar{background:#f59e0b;padding:10px 12px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:10;border-bottom:2px solid #d97706;flex-wrap:wrap}
+#_pdfBarTitle{font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#000;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#_pdfPrintBtn,#_pdfOpenBtn{background:#14532d;color:#86efac;border:none;padding:9px 16px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;font-family:Arial,sans-serif}
+#_pdfCloseBtn{background:#111;color:#fff;border:none;padding:9px 16px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;font-family:Arial,sans-serif}
+#_pdfContent{padding:12px;font-family:Arial,sans-serif}
+#_pdfSub{font-size:10px;color:#666;margin-bottom:10px}
+#_pdfTable{width:100%;border-collapse:collapse;font-size:11px}
+#_pdfTable th{background:#f59e0b;color:#000;font-weight:bold;padding:7px 8px;text-align:left;border:1px solid #d97706;white-space:nowrap;font-size:10px}
+#_pdfTable td{padding:6px 8px;border:1px solid #ddd;vertical-align:middle;color:#111}
+#_pdfTable tr:nth-child(even) td{background:#fffbf0}
+#_pdfFoot{margin-top:12px;font-size:9px;color:#aaa;text-align:right;padding-bottom:30px}
+/* PRINT — hide app, show only report */
+@media print{
+  .app,.nav,.toast{display:none!important}
+  #_pdfBar{display:none!important}
+  #_pdfOverlay{position:static!important;overflow:visible!important}
+  #_pdfContent{padding:0}
+  #_pdfTable{font-size:9px}
+  #_pdfTable th,#_pdfTable td{padding:4px 6px}
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff!important}
+}
+.export-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.export-bar .elabel{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);font-family:var(--font-mono);margin-right:4px}
+.btn-excel{background:#14532d22;color:#86efac;border:1px solid #22c55e44;border-radius:var(--r);padding:6px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);letter-spacing:0.3px}
+.btn-excel:active{opacity:0.8}
+.btn-pdf{background:#7c1d1d22;color:#fca5a5;border:1px solid #f43f5e44;border-radius:var(--r);padding:6px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);letter-spacing:0.3px}
+.btn-pdf:active{opacity:0.8}
+/* LOGIN GATE */
+body.locked .app{display:none}
+#loginGate{display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);align-items:center;justify-content:center;padding:24px}
+body.locked #loginGate{display:flex}
+.lg-card{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px 22px;text-align:center}
+.lg-logo{width:64px;height:64px;border-radius:14px;margin:0 auto 14px;display:block}
+.lg-title{font-family:var(--font-head);font-size:20px;font-weight:700;margin-bottom:4px}
+.lg-sub{font-size:12px;color:var(--text2);margin-bottom:22px}
+.g-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f1f1f;border:none;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;font-family:var(--font-body);cursor:pointer}
+.g-btn:disabled{opacity:.6}
+.g-btn svg{width:18px;height:18px}
+.lg-err{color:var(--red);font-size:12px;margin-top:12px;min-height:16px;font-family:var(--font-mono);word-break:break-word}
+.lg-note{font-size:10px;color:var(--text3);margin-top:16px;font-family:var(--font-mono)}
+.sync-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--font-mono);padding:2px 8px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);margin-left:6px;vertical-align:middle;font-weight:500;letter-spacing:.2px}
+.sync-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.sync-pill.synced{color:var(--green);border-color:#10b98155}.sync-pill.synced::before{background:var(--green)}
+.sync-pill.syncing{color:var(--amber);border-color:#f59e0b55}.sync-pill.syncing::before{background:var(--amber)}
+.sync-pill.offline{color:var(--text2)}.sync-pill.offline::before{background:var(--text2)}
+.sync-pill.error{color:var(--red);border-color:#f43f5e55}.sync-pill.error::before{background:var(--red)}
+.acct{display:flex;align-items:center;gap:11px}
+.acct img,.acct .acct-ph{width:38px;height:38px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);flex-shrink:0;object-fit:cover;display:flex;align-items:center;justify-content:center;color:var(--amber);font-weight:700}
+</style>
+<script>
+// ═══════════════════════════════════════════════════════
+// PURE JS EXCEL — clean CSV, no blank rows
+// ═══════════════════════════════════════════════════════
+const XLSX={
+  utils:{
+    aoa_to_sheet:function(data){return data;},
+    book_new:function(){return{sheets:{},names:[]};},
+    book_append_sheet:function(wb,ws,name){wb.sheets[name]=ws;wb.names.push(name);}
+  },
+  writeFile:function(wb,filename){
+    let csv='';
+    wb.names.forEach((name,si)=>{
+      if(si>0)csv+='\r\n== '+name+' ==\r\n';
+      (wb.sheets[name]||[]).forEach(row=>{
+        if(!row||!Array.isArray(row))return;
+        csv+=row.map(c=>{
+          const s=String(c==null?'':c);
+          return(s.includes(',')||s.includes('"'))?'"'+s.replace(/"/g,'""')+'"':s;
+        }).join(',')+'\r\n';
+      });
+    });
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=filename.replace(/\.xlsx?/,'.csv');
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+    showToast('Excel downloaded! Open the .csv file in Excel.');
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// PURE JS PDF — in-app overlay, no blank rows, close button works
+// ═══════════════════════════════════════════════════════
+window.jspdf={jsPDF:function(){
+  this._title='';this._subtitle='';this._head=[];this._body=[];
+  this.setFontSize=function(){return this;};
+  this.setFont=function(){return this;};
+  this.setTextColor=function(){return this;};
+  this.text=function(t,x,y){if(y<=16)this._title=t;else this._subtitle=t;return this;};
+  this.autoTable=function(cfg){
+    this._head=(cfg.head&&cfg.head[0])||[];
+    // strictly filter: only rows that are real arrays with at least one non-empty cell
+    this._body=(cfg.body||[]).filter(r=>Array.isArray(r)&&r.length>0&&r.some(c=>c!==null&&c!==undefined&&String(c).trim()!==''));
+    return this;
+  };
+  this.save=function(filename){
+    const title=this._title||'Report';
+    const subtitle=this._subtitle||'';
+    const head=this._head;
+    const body=this._body;
+    const theadHtml=head.length?`<tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr>`:'';
+    const tbodyHtml=body.map(row=>`<tr>${row.map(c=>`<td>${c==null?'':String(c)}</td>`).join('')}</tr>`).join('');
+
+    // Remove old overlay
+    const old=document.getElementById('_pdfOverlay');
+    if(old)old.remove();
+
+    // Build full self-contained HTML report
+    const reportHtml=`<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:12px;color:#111;background:#fff;padding:12px}
+h2{font-size:15px;font-weight:bold;margin-bottom:3px;color:#111}
+.sub{font-size:10px;color:#666;margin-bottom:10px}
+.actions{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.btn{padding:10px 18px;border:none;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer}
+.btn-pdf{background:#f59e0b;color:#000}
+.btn-close{background:#111;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{background:#f59e0b;color:#000;font-weight:bold;padding:7px 8px;text-align:left;border:1px solid #d97706;white-space:nowrap}
+td{padding:5px 8px;border:1px solid #ddd;vertical-align:middle}
+tr:nth-child(even) td{background:#fffbf0}
+.foot{margin-top:10px;font-size:9px;color:#aaa;text-align:right}
+@media print{.actions{display:none!important}@page{size:A4 landscape;margin:10mm}body{padding:4mm}}
+</style></head><body>
+<h2>${title}</h2>
+<div class="sub">${subtitle}</div>
+<div class="actions">
+  <button class="btn btn-pdf" onclick="window.print()">&#128438; Print / Save as PDF</button>
+  <button class="btn btn-close" onclick="window.close()">&#10005; Close</button>
+</div>
+<table><thead>${theadHtml}</thead><tbody>${tbodyHtml}</tbody></table>
+<div class="foot">Generated ${new Date().toLocaleString('en-IN')} &nbsp;·&nbsp; Plant Site Registers</div>
+</body></html>`;
+
+    // Show in-app overlay with the report + a big visible "Open in Browser" button
+    const ov=document.createElement('div');
+    ov.id='_pdfOverlay';
+    document.body.appendChild(ov);
+
+    ov.innerHTML=`
+      <div id="_pdfBar">
+        <div id="_pdfBarTitle">${title}</div>
+        <button id="_pdfOpenBtn">&#127758; Open in Browser</button>
+        <button id="_pdfCloseBtn">&#10005; Close</button>
+      </div>
+      <div id="_pdfContent">
+        <div id="_pdfSub">${subtitle}</div>
+        <table id="_pdfTable">
+          <thead>${theadHtml}</thead>
+          <tbody>${tbodyHtml}</tbody>
+        </table>
+        <div id="_pdfFoot">Generated ${new Date().toLocaleString('en-IN')} · Plant Site Registers</div>
+      </div>`;
+
+    document.getElementById('_pdfCloseBtn').onclick=function(){ov.remove();};
+
+    document.getElementById('_pdfOpenBtn').onclick=function(){
+      // Encode as data URI and open in system browser
+      // In Chrome: tap the 3-dot menu → Print → Save as PDF
+      try{
+        const encoded='data:text/html;charset=utf-8,'+encodeURIComponent(reportHtml);
+        const a=document.createElement('a');
+        a.href=encoded;
+        a.target='_blank';
+        a.rel='noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Opened in browser → tap ⋮ menu → Print → Save as PDF');
+      }catch(e){
+        showToast('Error: '+e.message);
+      }
+    };
+
+    showToast('Tap "Open in Browser" then Print → Save as PDF');
+  };
+  return this;
+}};
+</script>
+</head>
+<body class="locked">
+<div id="loginGate">
+  <div class="lg-card">
+    <img class="lg-logo" src="icons/icon-192.png" alt="">
+    <div class="lg-title">Plant Site Registers</div>
+    <div class="lg-sub">Site register · Cloud backup with Google account</div>
+    <button class="g-btn" id="gBtn" onclick="window.Cloud&&Cloud.signIn()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      <span id="gBtnTxt">Sign in with Google</span>
+    </button>
+    <div class="lg-err" id="lgErr"></div>
+    <div class="lg-note">Data Firebase cloud me save hota hai · offline bhi kaam karta hai</div>
+  </div>
+</div>
+<div class="app">
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <button class="nav-btn active" id="nav-home" onclick="goTo('home')">
+    <span class="nav-icon">🏠</span>Dashboard
+  </button>
+  <button class="nav-btn" id="nav-works" onclick="goTo('works')">
+    <span class="nav-icon">🏗️</span>Works
+  </button>
+  <button class="nav-btn" id="nav-material" onclick="goTo('material')">
+    <span class="nav-icon">🪨</span>Material
+  </button>
+  <button class="nav-btn" id="nav-expense" onclick="goTo('expense')">
+    <span class="nav-icon">💰</span>Expense
+  </button>
+  <button class="nav-btn" id="nav-manage" onclick="goTo('manage')">
+    <span class="nav-icon">⚙️</span>Manage
+  </button>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Plant Site Registers <span class="save-dot" id="saveDot"></span><span class="sync-pill offline" id="syncPill">—</span></div>
+      <div class="page-sub" id="homeSub">Site management · Cloud sync</div>
+    </div>
+    <div class="fg"><label>Date</label><input type="date" id="globalDate" style="width:135px" onchange="syncDates()"></div>
+  </div>
+  <div class="home-grid">
+    <div class="home-card" onclick="goTo('works')">
+      <div class="hc-label">Module 01</div>
+      <div class="hc-title">Works Register</div>
+      <div class="hc-sub">Dispatch · Bitumen · Tankers</div>
+      <div class="hc-stat" id="hc-works">0 works</div>
+    </div>
+    <div class="home-card" onclick="goTo('material')">
+      <div class="hc-label">Module 02</div>
+      <div class="hc-title">Material Inward</div>
+      <div class="hc-sub">Aggregate · Plant site</div>
+      <div class="hc-stat" id="hc-material">0 entries</div>
+    </div>
+    <div class="home-card" onclick="goTo('expense')">
+      <div class="hc-label">Module 03</div>
+      <div class="hc-title">Expense & Income</div>
+      <div class="hc-sub">Drivers · Payments</div>
+      <div class="hc-stat" id="hc-expense">Balance: ₹0</div>
+    </div>
+    <div class="home-card" onclick="goTo('manage')">
+      <div class="hc-label">Module 04</div>
+      <div class="hc-title">Manage</div>
+      <div class="hc-sub">Drivers · Vehicles · Settings</div>
+      <div class="hc-stat" id="hc-manage">Settings</div>
+    </div>
+  </div>
+  <div class="stats-grid" id="homeStats"></div>
+</div>
+
+<!-- WORKS -->
+<div class="screen" id="screen-works">
+  <div id="ws-list">
+    <div class="page-header">
+      <div><div class="page-title">Works Register</div><div class="page-sub">All road construction works</div></div>
+      <button class="btn btn-amber" onclick="showNewWork()">+ New</button>
+    </div>
+    <div id="workListEl"></div>
+  </div>
+  <div id="ws-form" style="display:none">
+    <div class="nw-card">
+      <div style="font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:12px;color:var(--text)" id="nwTitle">Create New Work</div>
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="fg"><label>Department</label>
+          <select id="nwDept"><option value="">— Select —</option>
+            <optgroup label="R&B Dept"><option>R&B Department (State)</option><option>R&B Department (Panchayat)</option></optgroup>
+            <optgroup label="National Highway"><option>NHAI</option><option>NH State PWD</option></optgroup>
+            <optgroup label="Urban Bodies"><option>Municipal Corporation</option><option>Urban Development Authority</option><option>Nagar Palika</option></optgroup>
+            <optgroup label="Other"><option>PWD</option><option>PMGSY</option><option>Other</option></optgroup>
+          </select></div>
+        <div class="fg" style="grid-column:span 2"><label>Name of Work</label><input type="text" id="nwName" placeholder="e.g. Widening of SH-41 Km 12 to 18"></div>
+        <div class="fg"><label>Agreement No.</label><input type="text" id="nwAgreement" placeholder="AGR/2025-26/142"></div>
+        <div class="fg"><label>Contractor</label><input type="text" id="nwContractor" placeholder="M/s ABC Infra"></div>
+        <div class="fg"><label>Opening Bitumen (kg)</label><input type="number" id="nwOB" placeholder="32770"></div>
+      </div>
+      <div class="section-title">Bitumen % — set once for this work</div>
+      <div class="bitu-grid" id="nwBituGrid" style="margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-amber" id="nwSaveBtn" onclick="saveWork()">Save Work</button>
+        <button class="btn btn-ghost" onclick="showWsList()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="ws-register" style="display:none">
+    <div class="page-header">
+      <div><div class="page-title" id="regWorkName" style="font-size:13px"></div><div class="page-sub" id="regWorkMeta"></div></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <div class="fg"><label>Date</label><input type="date" id="regDate" style="width:125px"></div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px" onclick="showWsList()">← Back</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px" onclick="editCurrentWork()">Edit</button>
+      </div>
+    </div>
+    <div class="bitu-ref" id="biturateBar"></div>
+    <div class="tabs" id="regTabs">
+      <div class="tab active" onclick="switchRegTab('dispatch')">Dispatch</div>
+      <div class="tab" onclick="switchRegTab('tanker')">Tanker</div>
+      <div class="tab" onclick="switchRegTab('ledger')">Ledger</div>
+      <div class="tab" onclick="switchRegTab('stock')">Stock</div>
+    </div>
+    <div class="tab-panel active" id="rtp-dispatch">
+      <div class="section"><div class="section-title">New Dispatch Entry</div>
+        <div class="form-grid">
+          <div class="fg"><label>Vehicle</label><select id="fVehicle"><option value="">Select…</option></select></div>
+          <div class="fg"><label>Material</label><select id="fMaterial"><option value="DBM">DBM</option><option value="BM">BM</option><option value="SDBC">SDBC</option><option value="BUSG">BUSG</option><option value="BC">BC</option><option value="OGPC">OGPC</option><option value="Sealcoat">Sealcoat</option></select></div>
+          <div class="fg"><label>Gross Wt (kg)</label><input type="number" id="fGwt" placeholder="42180"></div>
+          <div class="fg"><label>Tare Wt (kg)</label><input type="number" id="fTwt" placeholder="11750"></div>
+          <div class="fg"><label>Net Wt (auto)</label><input type="number" id="fNwt" readonly style="background:var(--bg4);opacity:0.7"></div>
+          <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="addDispatch()">+ Add</button></div>
+        </div>
+      </div>
+      <div class="stats-grid" id="dspStats"></div>
+      <div class="section"><div class="section-title">Dispatch Log</div>
+        <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportDispatchExcel()">Excel</button><button class="btn-pdf" onclick="exportDispatchPDF()">PDF</button></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Vehicle</th><th>Mat</th><th>G.Wt</th><th>T.Wt</th><th>N.Wt</th><th>Run</th><th>Bitu</th><th>Cum</th><th></th></tr></thead><tbody id="dspTbody"><tr><td colspan="11" class="empty-msg">No entries yet</td></tr></tbody></table></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="rtp-tanker">
+      <div class="section"><div class="section-title">New Tanker Arrival</div>
+        <div class="form-grid">
+          <div class="fg"><label>Tanker No.</label><input type="text" id="tVehicle" placeholder="GJ05T1234"></div>
+          <div class="fg"><label>Supplier</label><input type="text" id="tSupplier" placeholder="HPCL Vadodara"></div>
+          <div class="fg"><label>Grade</label><select id="tGrade"><option>VG-30</option><option>VG-10</option><option>VG-40</option><option>PMB-40</option><option>PMB-70</option><option>Other</option></select></div>
+          <div class="fg"><label>Gross Wt (kg)</label><input type="number" id="tGwt" placeholder="28000"></div>
+          <div class="fg"><label>Tare Wt (kg)</label><input type="number" id="tTwt" placeholder="8500"></div>
+          <div class="fg"><label>Net Bitumen (auto)</label><input type="number" id="tNwt" readonly style="background:var(--bg4);opacity:0.7"></div>
+          <div class="fg"><label>Invoice No.</label><input type="text" id="tInvoice" placeholder="INV-2026-031"></div>
+          <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="addTanker()">+ Add</button></div>
+        </div>
+      </div>
+      <div class="stats-grid" id="tnkStats"></div>
+      <div class="section"><div class="section-title">Tanker Log</div>
+        <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportTankerExcel()">Excel</button><button class="btn-pdf" onclick="exportTankerPDF()">PDF</button></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Tanker</th><th>Supplier</th><th>Grade</th><th>G.Wt</th><th>T.Wt</th><th>Net Bitu</th><th>Invoice</th><th>Cum.</th><th></th></tr></thead><tbody id="tnkTbody"><tr><td colspan="11" class="empty-msg">No arrivals yet</td></tr></tbody></table></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="rtp-ledger">
+      <div class="stats-grid" id="ldgStats"></div>
+      <div class="bar-wrap"><div class="bar-labels"><span>Bitumen balance</span><span id="ldgBarLbl">—</span></div><div class="bar-track"><div class="bar-fill" id="ldgBar" style="width:0%"></div></div></div>
+      <div class="section"><div class="section-title">Transaction Ledger</div>
+        <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportLedgerExcel()">Excel</button><button class="btn-pdf" onclick="exportLedgerPDF()">PDF</button></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Type</th><th>Details</th><th>IN (kg)</th><th>OUT (kg)</th><th>Balance</th></tr></thead><tbody id="ldgTbody"></tbody></table></div>
+      </div>
+      <div class="section"><div class="section-title">Date-wise Summary</div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>Date</th><th>Tankers</th><th>IN</th><th>OUT</th><th>Net</th><th>Closing</th></tr></thead><tbody id="ldgDateTbody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="rtp-stock">
+      <div class="stats-grid" id="stkStats"></div>
+      <div class="bar-wrap"><div class="bar-labels"><span>Stock level</span><span id="stkBarLbl">—</span></div><div class="bar-track"><div class="bar-fill" id="stkBar" style="width:0%"></div></div></div>
+      <div class="section"><div class="section-title">Material-wise Consumed</div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>Material</th><th>Bitu %</th><th>Trips</th><th>Mix (kg)</th><th>Bitu consumed</th></tr></thead><tbody id="stkMatTbody"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MATERIAL -->
+<div class="screen" id="screen-material">
+  <div class="page-header">
+    <div><div class="page-title">Material Inward</div><div class="page-sub">Plant site · Aggregate receipt log</div></div>
+    <div class="fg"><label>Date</label><input type="date" id="matDate" style="width:135px"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchMatTab('entry')">Entry</div>
+    <div class="tab" onclick="switchMatTab('log')">All Entries</div>
+    <div class="tab" onclick="switchMatTab('report')">Report</div>
+  </div>
+  <div class="tab-panel active" id="mtp-entry">
+    <div class="section"><div class="section-title">New Material Entry</div>
+      <div class="form-grid">
+        <div class="fg"><label>Vehicle No.</label><input type="text" id="mVehicle" placeholder="GJ20Z3951" style="text-transform:uppercase"></div>
+        <div class="fg"><label>Source</label><select id="mSource"><option value="">— Source —</option><option>Pitol</option><option>Alaknanda</option><option>Meghnagar</option><option>Devzari</option><option>Thandla</option><option>Other</option></select></div>
+        <div class="fg"><label>Material Type</label><select id="mType"><option value="">— Type —</option><option value="dust">Dust</option><option value="6mm">6 mm</option><option value="10mm">10 mm</option><option value="20mm">20 mm</option><option value="40mm">40 mm</option><option value="65mm">65 mm</option></select></div>
+        <div class="fg"><label>Gross Wt (kg)</label><input type="number" id="mGwt" placeholder="28500"></div>
+        <div class="fg"><label>Tare Wt (kg)</label><input type="number" id="mTwt" placeholder="8200"></div>
+        <div class="fg"><label>Net Wt (auto)</label><input type="number" id="mNwt" readonly style="background:var(--bg4);opacity:0.7"></div>
+        <div class="fg"><label>Time</label><input type="time" id="mTime"></div>
+        <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="addMatEntry()">+ Add</button></div>
+      </div>
+    </div>
+    <div class="stats-grid" id="matTodayStats"></div>
+    <div class="section"><div class="section-title" id="matTodayTitle">Today's Entries</div>
+      <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportMatTodayExcel()">Excel</button><button class="btn-pdf" onclick="exportMatTodayPDF()">PDF</button></div>
+      <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Time</th><th>Vehicle</th><th>Source</th><th>Material</th><th>G.Wt</th><th>T.Wt</th><th>N.Wt</th><th>Running</th><th></th></tr></thead><tbody id="matTodayTbody"><tr><td colspan="10" class="empty-msg">No entries today</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="mtp-log">
+    <div class="filter-bar"><div class="form-grid">
+      <div class="fg"><label>From</label><input type="date" id="mlFrom"></div>
+      <div class="fg"><label>To</label><input type="date" id="mlTo"></div>
+      <div class="fg"><label>Source</label><select id="mlSrc"><option value="">All</option><option>Pitol</option><option>Alaknanda</option><option>Meghnagar</option><option>Devzari</option><option>Thandla</option><option>Other</option></select></div>
+      <div class="fg"><label>Material</label><select id="mlMat"><option value="">All</option><option value="dust">Dust</option><option value="6mm">6mm</option><option value="10mm">10mm</option><option value="20mm">20mm</option><option value="40mm">40mm</option><option value="65mm">65mm</option></select></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="renderMatLog()">Apply</button></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-ghost" onclick="clearMatLog()">Clear</button></div>
+    </div></div>
+    <div class="stats-grid" id="matLogStats"></div>
+    <div class="section"><div class="section-title" id="matLogTitle">All Entries</div>
+      <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportMatLogExcel()">Excel</button><button class="btn-pdf" onclick="exportMatLogPDF()">PDF</button></div>
+      <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Time</th><th>Vehicle</th><th>Source</th><th>Material</th><th>G.Wt</th><th>T.Wt</th><th>N.Wt</th><th></th></tr></thead><tbody id="matLogTbody"><tr><td colspan="10" class="empty-msg">No entries</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="mtp-report">
+    <div class="filter-bar">
+      <div class="form-grid">
+        <div class="fg"><label>From</label><input type="date" id="mrFrom"></div>
+        <div class="fg"><label>To</label><input type="date" id="mrTo"></div>
+        <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="renderMatReport()">Generate</button></div>
+        <div class="fg" style="justify-content:flex-end"><button class="btn btn-ghost" onclick="clearMatReport()">All Dates</button></div>
+      </div>
+      <div style="margin-top:9px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);font-family:var(--font-mono);margin-bottom:5px">Source</div>
+        <div class="chip-row" id="mrSrcChips"></div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);font-family:var(--font-mono);margin-bottom:5px">Material</div>
+        <div class="chip-row" id="mrMatChips"></div>
+      </div>
+      <div class="export-bar" style="margin-top:8px"><span class="elabel">Export Report</span><button class="btn-excel" onclick="exportMatReportExcel()">Excel</button><button class="btn-pdf" onclick="exportMatReportPDF()">PDF</button></div>
+    </div>
+    <div id="matReportOut"></div>
+  </div>
+</div>
+
+<!-- EXPENSE -->
+<div class="screen" id="screen-expense">
+  <div class="page-header">
+    <div><div class="page-title">Expense & Income</div><div class="page-sub">General ledger · Independent of work</div></div>
+    <div class="fg"><label>Date</label><input type="date" id="expDate" style="width:135px"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchExpTab('entry')">Entry</div>
+    <div class="tab" onclick="switchExpTab('ledger')">Ledger</div>
+    <div class="tab" onclick="switchExpTab('drivers')">Drivers</div>
+    <div class="tab" onclick="switchExpTab('report')">Report</div>
+  </div>
+  <div class="tab-panel active" id="etp-entry">
+    <div class="section"><div class="section-title">Entry Type</div>
+      <div class="toggle-group">
+        <button class="tgl inc" id="btnInc" onclick="setExpMode('income')">+ Income</button>
+        <button class="tgl" id="btnExp" onclick="setExpMode('expense')">− Expense</button>
+      </div>
+      <div id="incForm" class="sub-section" style="margin-top:10px">
+        <div class="form-grid">
+          <div class="fg"><label>Amount (₹)</label><input type="number" id="iAmt" placeholder="50000"></div>
+          <div class="fg"><label>Received From</label><input type="text" id="iFrom" placeholder="R&B Dept"></div>
+          <div class="fg"><label>Mode</label><select id="iMode"><option>Cash</option><option>Online</option><option>Cheque</option></select></div>
+          <div class="fg"><label>Remark</label><input type="text" id="iRemark" placeholder="Running bill etc."></div>
+          <div class="fg" style="justify-content:flex-end"><button class="btn btn-green" onclick="addIncome()">+ Add Income</button></div>
+        </div>
+      </div>
+      <div id="expForm" class="sub-section" style="display:none;margin-top:10px">
+        <div class="form-grid">
+          <div class="fg"><label>Category</label><select id="eCat" onchange="onCatChg()"><option value="driver">Driver</option><option value="other">Other Expense</option></select></div>
+          <div class="fg" id="drvField"><label>Driver</label><select id="eDriver"><option value="">— Select —</option></select></div>
+          <div class="fg" id="othField" style="display:none"><label>Type</label>
+            <select id="eOthType" onchange="onOthChg()"><option value="">— Select —</option><option>Spare Parts</option><option>Vegetable / Grocery</option><option>Fuel / Diesel</option><option>Labour / Wages</option><option>Repair & Maintenance</option><option>Toll / Road Tax</option><option>Tyre & Tube</option><option>Lubricant / Oil</option><option>Stationary / Office</option><option>Miscellaneous</option></select></div>
+          <div class="fg" id="spareField" style="display:none"><label>Spare Part</label>
+            <select id="eSpare"><option value="">— Part —</option><option>Engine Oil</option><option>Air/Oil/Fuel Filter</option><option>Brake Pad/Shoe</option><option>Battery</option><option>Belt/Fan Belt</option><option>Clutch Plate</option><option>Tyre</option><option>Headlight/Bulb</option><option>Radiator Part</option><option>Water/Fuel Pump</option><option>Other Spare</option></select></div>
+          <div class="fg"><label>Amount (₹)</label><input type="number" id="eAmt" placeholder="1500"></div>
+          <div class="fg"><label>Paid To</label><input type="text" id="ePaidTo" placeholder="Shop / person"></div>
+          <div class="fg"><label>Mode</label><select id="eMode"><option>Cash</option><option>Online</option><option>Cheque</option></select></div>
+          <div class="fg"><label>Remark</label><input type="text" id="eRemark" placeholder="optional"></div>
+          <div class="fg" style="justify-content:flex-end"><button class="btn btn-red" onclick="addExpense()">− Add Expense</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-grid" id="expTodayStats"></div>
+    <div class="section"><div class="section-title" id="expTodayTitle">Today's Transactions</div>
+      <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportExpTodayExcel()">Excel</button><button class="btn-pdf" onclick="exportExpTodayPDF()">PDF</button></div>
+      <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Type</th><th>Details</th><th>Remark</th><th>Mode</th><th>Amount</th><th>Balance</th><th></th></tr></thead><tbody id="expTodayTbody"><tr><td colspan="9" class="empty-msg">No entries today</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="etp-ledger">
+    <div class="filter-bar"><div class="form-grid">
+      <div class="fg"><label>From</label><input type="date" id="elFrom"></div>
+      <div class="fg"><label>To</label><input type="date" id="elTo"></div>
+      <div class="fg"><label>Type</label><select id="elType"><option value="">All</option><option value="income">Income</option><option value="expense">Expense</option></select></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="renderExpLedger()">Apply</button></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-ghost" onclick="clearExpLedger()">Clear</button></div>
+    </div></div>
+    <div class="stats-grid" id="expLedgerStats"></div>
+    <div class="section"><div class="section-title" id="expLedgerTitle">All Transactions</div>
+      <div class="export-bar"><span class="elabel">Export</span><button class="btn-excel" onclick="exportExpLedgerExcel()">Excel</button><button class="btn-pdf" onclick="exportExpLedgerPDF()">PDF</button></div>
+      <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Date</th><th>Type</th><th>Details</th><th>Mode</th><th>IN (₹)</th><th>OUT (₹)</th><th>Balance</th><th></th></tr></thead><tbody id="expLedgerTbody"><tr><td colspan="9" class="empty-msg">No entries</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="etp-drivers">
+    <div class="filter-bar"><div class="form-grid">
+      <div class="fg"><label>From Date</label><input type="date" id="dsFrom"></div>
+      <div class="fg"><label>To Date</label><input type="date" id="dsTo"></div>
+      <div class="fg"><label>Driver</label><select id="dsDriver"><option value="">All Drivers</option></select></div>
+      <div class="fg"><label>Mode</label><select id="dsMode"><option value="">All Modes</option><option>Cash</option><option>Online</option><option>Cheque</option></select></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="renderDriverSummary()">Apply</button></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-ghost" onclick="clearDriverSummary()">Clear</button></div>
+    </div></div>
+    <div class="stats-grid" id="dsStats"></div>
+    <div class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:7px">
+        <div class="section-title" style="margin-bottom:0">Driver-wise total paid</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="sort-btn on" id="dsb-amt" onclick="setDrvSort('amt')">Amount</button>
+          <button class="sort-btn" id="dsb-trips" onclick="setDrvSort('trips')">Trips</button>
+          <button class="sort-btn" id="dsb-name" onclick="setDrvSort('name')">Name</button>
+          <button class="btn-excel" onclick="exportDriverExcel()">Excel</button>
+          <button class="btn-pdf" onclick="exportDriverPDF()">PDF</button>
+        </div>
+      </div>
+      <div id="driverCards"><div class="empty-msg">No driver entries yet</div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="etp-report">
+    <div class="filter-bar"><div class="form-grid">
+      <div class="fg"><label>From</label><input type="date" id="erFrom"></div>
+      <div class="fg"><label>To</label><input type="date" id="erTo"></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-amber" onclick="renderExpReport()">Generate</button></div>
+      <div class="fg" style="justify-content:flex-end"><button class="btn btn-ghost" onclick="clearExpReport()">All</button></div>
+    </div>
+    <div class="export-bar" style="margin-top:8px"><span class="elabel">Export Report</span><button class="btn-excel" onclick="exportExpReportExcel()">Excel</button><button class="btn-pdf" onclick="exportExpReportPDF()">PDF</button></div>
+    </div>
+    <div id="expReportOut"></div>
+  </div>
+</div>
+
+<!-- MANAGE (Module 04) -->
+<div class="screen" id="screen-manage">
+  <div class="page-header">
+    <div><div class="page-title">Manage</div><div class="page-sub">Module 04 · Drivers · Vehicles · Settings</div></div>
+  </div>
+  <div class="section"><div class="section-title">Account · Cloud</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div class="acct"><div id="acctPic" class="acct-ph">?</div><div><div style="font-size:13px;font-weight:600" id="acctName">—</div><div style="font-size:11px;color:var(--text2);font-family:var(--font-mono)" id="acctEmail">—</div></div></div>
+      <button class="btn btn-red" onclick="window.Cloud&&Cloud.signOut()">Logout</button>
+    </div>
+    <div style="font-size:11px;color:var(--text2);margin-top:10px">Har entry turant Firebase (Firestore) me save hoti hai. Net na ho to phone me save rehti hai aur net aate hi upload ho jati hai.</div>
+  </div>
+  <div class="section"><div class="section-title">Driver List</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px">
+      <div class="fg"><label>Add New Driver</label><input type="text" id="newDriver" placeholder="Full name" style="width:190px" onkeydown="if(event.key==='Enter')addDriver()"></div>
+      <button class="btn btn-amber" onclick="addDriver()">+ Add</button>
+    </div>
+    <div id="driverListEl"></div>
+  </div>
+  <div class="section"><div class="section-title">Vehicle List</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px">
+      <div class="fg"><label>Add Vehicle No.</label><input type="text" id="newVehicle" placeholder="e.g. GJ20Z1234" style="width:190px;text-transform:uppercase" onkeydown="if(event.key==='Enter')addVehicle()"></div>
+      <button class="btn btn-amber" onclick="addVehicle()">+ Add</button>
+    </div>
+    <div id="vehicleListEl"></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STATE & CONSTANTS
+// ═══════════════════════════════════════════════════════
+const PREFIX='GJ20Z';
+const DEFAULT_VEHICLES=['GJ20Z9951','GJ20Z8951','GJ20Z7951','GJ20Z6951','GJ20Z5951','GJ20Z4951','GJ20Z3951','GJ20Z2951','GJ20Z1951','GJ20Z9051','GJ20X9518','GJ20X9519','GJ20X9516','GJ20X9517','GJ20X1951','GJ17UU3951','GJ17UU1951','GJ20X4951'];
+let vehicles=[...DEFAULT_VEHICLES];
+const BMATS=['BM','DBM','SDBC','BUSG','BC','OGPC','Sealcoat'];
+const FIXED_PCT={BM:3.4,BUSG:2.0};
+const MSRCS=['Pitol','Alaknanda','Meghnagar','Devzari','Thandla','Other'];
+const MMATS=['dust','6mm','10mm','20mm','40mm','65mm'];
+const MLBL={dust:'Dust','6mm':'6mm','10mm':'10mm','20mm':'20mm','40mm':'40mm','65mm':'65mm'};
+
+let works=[],activeWorkId=null,editingWorkId=null;
+let matEntries=[],expEntries=[];
+let expMode='income',drvSort='amt',expandedDriver=null;
+let mrSrcF=[],mrMatF=[];
+let drivers=['Sukaram Mavi','Rahul Damor','Mahesh Damor','Lalit Damor','Jekon Baria','Raju Baria','Gopal Baria','Rinku Baria','Ishwar Chohan','Ganpat Chohan','Manoj Coinaj','Vipin Dolatram (Raisoyo)','Rullo Looha','Chamaria','Shailesh 1951','Mudita Bhai','Manshing 9519','Raju Baria 9518','Manish Bhil'];
+
+// ═══════════════════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE
+// ═══════════════════════════════════════════════════════
+const STORAGE_KEYS={works:'rca_works',mat:'rca_mat',exp:'rca_exp',drivers:'rca_drivers',vehicles:'rca_vehicles'};
+
+function saveAll(){
+  try{
+    localStorage.setItem(STORAGE_KEYS.works,JSON.stringify(works));
+    localStorage.setItem(STORAGE_KEYS.mat,JSON.stringify(matEntries));
+    localStorage.setItem(STORAGE_KEYS.exp,JSON.stringify(expEntries));
+    localStorage.setItem(STORAGE_KEYS.drivers,JSON.stringify(drivers));
+    localStorage.setItem(STORAGE_KEYS.vehicles,JSON.stringify(vehicles));
+    flashSave();
+    if(window.Cloud)Cloud.push();
+  }catch(e){showToast('Save error: '+e.message);}
+}
+
+function loadAll(){
+  try{
+    const w=localStorage.getItem(STORAGE_KEYS.works);
+    const m=localStorage.getItem(STORAGE_KEYS.mat);
+    const e=localStorage.getItem(STORAGE_KEYS.exp);
+    const d=localStorage.getItem(STORAGE_KEYS.drivers);
+    const v=localStorage.getItem(STORAGE_KEYS.vehicles);
+    if(w)works=JSON.parse(w);
+    if(m)matEntries=JSON.parse(m);
+    if(e)expEntries=JSON.parse(e);
+    if(d)drivers=JSON.parse(d);
+    if(v)vehicles=JSON.parse(v);
+  }catch(err){showToast('Load error: '+err.message);}
+}
+
+function flashSave(){
+  const dot=document.getElementById('saveDot');
+  dot.classList.add('show');
+  setTimeout(()=>dot.classList.remove('show'),1500);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ═══════════════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════════════
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function initDates(){
+  const d=todayStr();
+  ['globalDate','matDate','expDate','regDate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=d;});
+  const t=new Date();const el=document.getElementById('mTime');
+  if(el)el.value=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  document.getElementById('dsFrom').value=d;document.getElementById('dsTo').value=d;
+}
+function syncDates(){const d=document.getElementById('globalDate').value;['matDate','expDate','regDate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=d;});}
+function getRegDate(){return document.getElementById('regDate').value||todayStr();}
+function getMatDate(){return document.getElementById('matDate').value||todayStr();}
+function getExpDate(){return document.getElementById('expDate').value||todayStr();}
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+function goTo(name){
+  ['home','works','material','expense','manage'].forEach(n=>{
+    document.getElementById('nav-'+n).classList.toggle('active',n===name);
+    document.getElementById('screen-'+n).classList.toggle('active',n===name);
+  });
+  if(name==='home')renderHome();
+  if(name==='works')showWsList();
+  if(name==='material'){renderMatToday();buildMatChips();}
+  if(name==='expense'){renderExpToday();populateDriverSelects();}
+  if(name==='manage'){renderDriverList();renderVehicleList();}
+}
+
+// ═══════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════
+function renderHome(){
+  document.getElementById('hc-works').textContent=works.length+' work'+(works.length===1?'':'s');
+  document.getElementById('hc-material').textContent=matEntries.length+' entr'+(matEntries.length===1?'y':'ies');
+  const bal=expEntries.reduce((a,e)=>a+(e.kind==='income'?e.amount:-e.amount),0);
+  document.getElementById('hc-expense').textContent='Balance: ₹'+Math.round(bal).toLocaleString('en-IN');
+  const totalTrips=works.reduce((a,w)=>a+w.dispatches.length,0);
+  const totalBitu=works.reduce((a,w)=>a+w.dispatches.reduce((b,d)=>b+(d.bitu||0),0),0);
+  const totalMat=matEntries.reduce((a,e)=>a+e.nwt,0);
+  const todayMat=matEntries.filter(e=>e.date===todayStr()).reduce((a,e)=>a+e.nwt,0);
+  document.getElementById('homeStats').innerHTML=`
+    <div class="sc blue"><div class="sl">Dispatch Trips</div><div class="sv">${totalTrips}</div></div>
+    <div class="sc amber"><div class="sl">Bitumen Consumed</div><div class="sv">${totalBitu.toLocaleString()}<span class="su">kg</span></div></div>
+    <div class="sc green"><div class="sl">Material Received</div><div class="sv">${(totalMat/1000).toFixed(1)}<span class="su">MT</span></div></div>
+    <div class="sc"><div class="sl">Material Today</div><div class="sv">${(todayMat/1000).toFixed(2)}<span class="su">MT</span></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// WORKS MODULE
+// ═══════════════════════════════════════════════════════
+function showWsList(){document.getElementById('ws-list').style.display='block';document.getElementById('ws-form').style.display='none';document.getElementById('ws-register').style.display='none';renderWorkList();}
+function showNewWork(){editingWorkId=null;document.getElementById('nwTitle').textContent='Create New Work';document.getElementById('nwSaveBtn').textContent='Save Work';['nwDept','nwName','nwAgreement','nwContractor','nwOB'].forEach(id=>{const el=document.getElementById(id);el.tagName==='SELECT'?el.value='':el.value='';});buildBituGrid(null);document.getElementById('ws-list').style.display='none';document.getElementById('ws-form').style.display='block';}
+function editCurrentWork(){const w=getWork();if(!w)return;editingWorkId=w.id;document.getElementById('nwTitle').textContent='Edit Work';document.getElementById('nwSaveBtn').textContent='Update';document.getElementById('nwDept').value=w.dept;document.getElementById('nwName').value=w.name;document.getElementById('nwAgreement').value=w.agreement;document.getElementById('nwContractor').value=w.contractor;document.getElementById('nwOB').value=w.ob||'';buildBituGrid(w.bituPct);document.getElementById('ws-register').style.display='none';document.getElementById('ws-form').style.display='block';}
+function buildBituGrid(bp){const g=document.getElementById('nwBituGrid');g.innerHTML='';BMATS.forEach(m=>{const isFx=FIXED_PCT[m]!==undefined;const val=bp?bp[m]:isFx?FIXED_PCT[m]:null;const d=document.createElement('div');d.className='bprow';d.innerHTML=`<div style="display:flex;align-items:center"><span style="font-size:13px;font-weight:600;font-family:var(--font-mono);color:var(--text)">${m}</span>${isFx?'<span class="fixed-tag">fixed</span>':''}</div><div style="display:flex;align-items:center;gap:5px"><input type="number" step="0.1" value="${val||''}" placeholder="%" id="nbp_${m}" ${isFx?'readonly':''} style="${isFx?'opacity:0.5':''}"><span style="font-size:11px;color:var(--text2)">%</span></div>`;g.appendChild(d);});}
+function saveWork(){const name=document.getElementById('nwName').value.trim();if(!name){alert('Enter name of work.');return;}const bp={};BMATS.forEach(m=>{const v=parseFloat(document.getElementById('nbp_'+m).value);bp[m]=isNaN(v)?null:v;});if(editingWorkId){const w=works.find(x=>x.id===editingWorkId);w.dept=document.getElementById('nwDept').value;w.name=name;w.agreement=document.getElementById('nwAgreement').value.trim();w.contractor=document.getElementById('nwContractor').value.trim();w.ob=parseFloat(document.getElementById('nwOB').value)||0;w.bituPct=bp;w.dispatches.forEach(d=>{const p=bp[d.m];d.bitu=p?Math.round(d.nwt*p/100):null;});activeWorkId=editingWorkId;saveAll();openWork(activeWorkId);}else{const id='W'+Date.now();works.push({id,dept:document.getElementById('nwDept').value,name,agreement:document.getElementById('nwAgreement').value.trim(),contractor:document.getElementById('nwContractor').value.trim(),ob:parseFloat(document.getElementById('nwOB').value)||0,bituPct:bp,dispatches:[],tankers:[]});saveAll();openWork(id);}showToast('Work saved!');}
+function renderWorkList(){const c=document.getElementById('workListEl');if(!works.length){c.innerHTML='<div class="section"><div class="empty-msg">No works yet — tap + New to begin</div></div>';return;}c.innerHTML='';works.forEach(w=>{const consumed=w.dispatches.reduce((a,d)=>a+(d.bitu||0),0);const arrived=w.tankers.reduce((a,t)=>a+t.nwt,0);const bal=Math.max(0,(w.ob||0)+arrived-consumed);const div=document.createElement('div');div.className='work-card';div.innerHTML=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div class="wc-name">${w.name}</div><div class="wc-meta">${w.dept?`<span class="badge b-amber">${w.dept}</span>`:''} ${w.agreement?`<span>${w.agreement}</span>`:''} ${w.contractor?`<span style="color:var(--text2)">${w.contractor}</span>`:''}</div><div class="wc-meta" style="margin-top:5px;font-family:var(--font-mono)"><span style="color:var(--text2)">Trips: <b style="color:var(--text)">${w.dispatches.length}</b></span><span style="color:var(--text2)">Tankers: <b style="color:var(--text)">${w.tankers.length}</b></span><span style="color:var(--text2)">Bal: <b style="color:var(--amber)">${bal.toLocaleString()} kg</b></span></div></div><div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0"><button class="btn btn-amber" style="font-size:11px;padding:6px 10px" onclick="openWork('${w.id}')">Open →</button><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="editWorkFromList('${w.id}')">✎ Edit</button><button class="btn-del" onclick="deleteWork('${w.id}',event)">Del</button></div></div>`;c.appendChild(div);});}
+function editWorkFromList(id){editingWorkId=id;const w=works.find(x=>x.id===id);if(!w)return;document.getElementById('nwTitle').textContent='Edit Work Details';document.getElementById('nwSaveBtn').textContent='Update Work';document.getElementById('nwDept').value=w.dept;document.getElementById('nwName').value=w.name;document.getElementById('nwAgreement').value=w.agreement;document.getElementById('nwContractor').value=w.contractor;document.getElementById('nwOB').value=w.ob||'';buildBituGrid(w.bituPct);document.getElementById('ws-list').style.display='none';document.getElementById('ws-form').style.display='block';}
+function deleteWork(id,e){e.stopPropagation();if(!confirm('Delete this work and all its data?'))return;works=works.filter(w=>w.id!==id);saveAll();renderWorkList();}
+function getWork(){return works.find(w=>w.id===activeWorkId);}
+function openWork(id){activeWorkId=id;const w=getWork();document.getElementById('regDate').value=todayStr();document.getElementById('regWorkName').textContent=w.name;const meta=[];if(w.dept)meta.push(`<span class="badge b-amber">${w.dept}</span>`);if(w.agreement)meta.push(w.agreement);if(w.contractor)meta.push(w.contractor);document.getElementById('regWorkMeta').innerHTML=meta.join(' · ');const rates=BMATS.filter(m=>w.bituPct[m]).map(m=>`<span><b>${m}</b> ${w.bituPct[m]}%</span>`);document.getElementById('biturateBar').innerHTML=rates.length?'<span style="color:var(--text3);margin-right:6px">Bitu%</span>'+rates.join(' | '):'<span style="color:var(--text3)">No bitumen % — tap Edit</span>';const sel=document.getElementById('fVehicle');sel.innerHTML='<option value="">Select vehicle…</option>';vehicles.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});document.getElementById('ws-list').style.display='none';document.getElementById('ws-form').style.display='none';document.getElementById('ws-register').style.display='block';switchRegTab('dispatch');renderRegAll();}
+function switchRegTab(name){const ns=['dispatch','tanker','ledger','stock'];document.querySelectorAll('#regTabs .tab').forEach((t,i)=>t.classList.toggle('active',ns[i]===name));ns.forEach(n=>document.getElementById('rtp-'+n).classList.toggle('active',n===name));if(name==='ledger')renderLedger();if(name==='stock')renderStock();}
+function wireNwt(g,t,n){const f=()=>{const gv=parseFloat(document.getElementById(g).value)||0;const tv=parseFloat(document.getElementById(t).value)||0;document.getElementById(n).value=gv&&tv?Math.max(0,gv-tv):'';};document.getElementById(g).addEventListener('input',f);document.getElementById(t).addEventListener('input',f);}
+wireNwt('fGwt','fTwt','fNwt');wireNwt('tGwt','tTwt','tNwt');wireNwt('mGwt','mTwt','mNwt');
+function addDispatch(){const w=getWork();const v=document.getElementById('fVehicle').value;const m=document.getElementById('fMaterial').value;const g=parseFloat(document.getElementById('fGwt').value);const t=parseFloat(document.getElementById('fTwt').value);if(!v){alert('Select vehicle.');return;}if(!g||!t){alert('Enter weights.');return;}const nwt=Math.max(0,g-t);const p=w.bituPct[m];w.dispatches.push({date:getRegDate(),v,m,g,t,nwt,bitu:p?Math.round(nwt*p/100):null});['fGwt','fTwt','fNwt'].forEach(id=>document.getElementById(id).value='');saveAll();renderRegAll();showToast('Entry saved');}
+function deleteDispatch(i){getWork().dispatches.splice(i,1);saveAll();renderRegAll();}
+function addTanker(){const w=getWork();const vno=document.getElementById('tVehicle').value.trim().toUpperCase();const g=parseFloat(document.getElementById('tGwt').value);const t=parseFloat(document.getElementById('tTwt').value);if(!vno){alert('Enter tanker number.');return;}if(!g||!t){alert('Enter weights.');return;}w.tankers.push({date:getRegDate(),vno,sup:document.getElementById('tSupplier').value.trim(),grade:document.getElementById('tGrade').value,g,t,nwt:Math.max(0,g-t),inv:document.getElementById('tInvoice').value.trim()});['tVehicle','tSupplier','tGwt','tTwt','tNwt','tInvoice'].forEach(id=>document.getElementById(id).value='');saveAll();renderRegAll();showToast('Tanker saved');}
+function deleteTanker(i){getWork().tankers.splice(i,1);saveAll();renderRegAll();}
+function renderRegAll(){renderDispatches();renderDspStats();renderTankers();renderTnkStats();}
+function mBadge(m){return`<span class="badge mat-${m}">${m}</span>`;}
+function renderDispatches(){const w=getWork();const tb=document.getElementById('dspTbody');if(!w.dispatches.length){tb.innerHTML='<tr><td colspan="11" class="empty-msg">No entries yet</td></tr>';return;}let rm=0,rb=0;tb.innerHTML='';w.dispatches.forEach((e,i)=>{rm+=e.nwt;rb+=e.bitu||0;const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${e.date}</td><td style="color:var(--amber)">${e.v}</td><td>${mBadge(e.m)}</td><td>${e.g.toLocaleString()}</td><td>${e.t.toLocaleString()}</td><td style="font-weight:500">${e.nwt.toLocaleString()}</td><td>${rm.toLocaleString()}</td><td>${e.bitu!=null?e.bitu.toLocaleString():'—'}</td><td style="color:var(--amber);font-weight:600">${rb.toLocaleString()}</td><td><button class="btn-del" onclick="deleteDispatch(${i})">✕</button></td>`;tb.appendChild(tr);});}
+function renderDspStats(){const w=getWork();const consumed=w.dispatches.reduce((a,e)=>a+(e.bitu||0),0);const arrived=w.tankers.reduce((a,t)=>a+t.nwt,0);const bal=Math.max(0,(w.ob||0)+arrived-consumed);document.getElementById('dspStats').innerHTML=`<div class="sc"><div class="sl">Trips</div><div class="sv">${w.dispatches.length}</div></div><div class="sc"><div class="sl">Total Mix</div><div class="sv">${w.dispatches.reduce((a,e)=>a+e.nwt,0).toLocaleString()}<span class="su">kg</span></div></div><div class="sc amber"><div class="sl">Bitu Consumed</div><div class="sv">${consumed.toLocaleString()}<span class="su">kg</span></div></div><div class="sc ${bal<5000?'red':bal<15000?'amber':'green'}"><div class="sl">Bitu Balance</div><div class="sv">${bal.toLocaleString()}<span class="su">kg</span></div></div>`;}
+function renderTankers(){const w=getWork();const tb=document.getElementById('tnkTbody');if(!w.tankers.length){tb.innerHTML='<tr><td colspan="11" class="empty-msg">No arrivals yet</td></tr>';return;}let cum=0;tb.innerHTML='';w.tankers.forEach((t,i)=>{cum+=t.nwt;const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${t.date}</td><td style="color:var(--amber)">${t.vno}</td><td>${t.sup||'—'}</td><td><span class="badge b-green">${t.grade}</span></td><td>${t.g.toLocaleString()}</td><td>${t.t.toLocaleString()}</td><td style="color:var(--green);font-weight:600">${t.nwt.toLocaleString()}</td><td style="font-size:11px;color:var(--text2)">${t.inv||'—'}</td><td style="font-weight:600">${cum.toLocaleString()}</td><td><button class="btn-del" onclick="deleteTanker(${i})">✕</button></td>`;tb.appendChild(tr);});}
+function renderTnkStats(){const w=getWork();const total=w.tankers.reduce((a,t)=>a+t.nwt,0);const tday=w.tankers.filter(t=>t.date===getRegDate()).reduce((a,t)=>a+t.nwt,0);document.getElementById('tnkStats').innerHTML=`<div class="sc green"><div class="sl">Total Tankers</div><div class="sv">${w.tankers.length}</div></div><div class="sc green"><div class="sl">Cumul. Arrived</div><div class="sv">${total.toLocaleString()}<span class="su">kg</span></div></div><div class="sc"><div class="sl">Arrived Today</div><div class="sv">${tday.toLocaleString()}<span class="su">kg</span></div></div>`;}
+function renderLedger(){const w=getWork();const ob=w.ob||0;const arrived=w.tankers.reduce((a,t)=>a+t.nwt,0);const consumed=w.dispatches.reduce((a,e)=>a+(e.bitu||0),0);const totalIn=ob+arrived;const bal=Math.max(0,totalIn-consumed);const pct=totalIn>0?Math.round(bal/totalIn*100):0;document.getElementById('ldgStats').innerHTML=`<div class="sc"><div class="sl">Opening</div><div class="sv">${ob.toLocaleString()}<span class="su">kg</span></div></div><div class="sc green"><div class="sl">Total IN</div><div class="sv">${totalIn.toLocaleString()}<span class="su">kg</span></div></div><div class="sc amber"><div class="sl">Consumed</div><div class="sv">${consumed.toLocaleString()}<span class="su">kg</span></div></div><div class="sc ${pct<20?'red':pct<40?'amber':'green'}"><div class="sl">Balance</div><div class="sv">${bal.toLocaleString()}<span class="su">kg</span></div></div>`;const fill=document.getElementById('ldgBar');fill.style.width=pct+'%';fill.className='bar-fill'+(pct<20?' low':pct<40?' mid':'');document.getElementById('ldgBarLbl').textContent=pct+'% · '+bal.toLocaleString()+' kg';let txns=[];if(ob>0)txns.push({date:'—',type:'OB',detail:'Opening stock',inKg:ob,outKg:0});w.tankers.forEach(t=>txns.push({date:t.date,type:'IN',detail:`${t.vno} · ${t.grade}`,inKg:t.nwt,outKg:0}));w.dispatches.forEach(e=>txns.push({date:e.date,type:'OUT',detail:`${e.v} · ${e.m}`,inKg:0,outKg:e.bitu||0,nd:e.bitu===null}));txns.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);const tb=document.getElementById('ldgTbody');if(!txns.length){tb.innerHTML='<tr><td colspan="7" class="empty-msg">No transactions</td></tr>';return;}let rb=0;tb.innerHTML='';txns.forEach((tx,i)=>{rb+=tx.inKg-tx.outKg;const isIn=tx.type!=='OUT';const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${tx.date}</td><td><span class="badge ${isIn?'b-green':'b-red'}">${tx.type}</span></td><td style="color:var(--text2)">${tx.detail}</td><td style="color:var(--green);font-weight:600">${tx.inKg>0?tx.inKg.toLocaleString():'—'}</td><td style="color:var(--amber)">${tx.outKg>0?tx.outKg.toLocaleString():'—'}</td><td style="font-weight:700;color:${rb<5000?'var(--red)':rb<15000?'var(--amber)':'var(--green)'}">${Math.max(0,rb).toLocaleString()}</td>`;tb.appendChild(tr);});const allDates=[...new Set([...w.dispatches.map(d=>d.date),...w.tankers.map(t=>t.date)])].sort();const dtb=document.getElementById('ldgDateTbody');if(!allDates.length){dtb.innerHTML='<tr><td colspan="6" class="empty-msg">No data</td></tr>';return;}let cb=ob;dtb.innerHTML='';allDates.forEach(dt=>{const arr=w.tankers.filter(t=>t.date===dt).reduce((a,t)=>a+t.nwt,0);const con=w.dispatches.filter(d=>d.date===dt).reduce((a,e)=>a+(e.bitu||0),0);cb+=arr-con;const net=arr-con;const tr=document.createElement('tr');tr.innerHTML=`<td>${dt}</td><td>${w.tankers.filter(t=>t.date===dt).length}</td><td style="color:var(--green)">${arr.toLocaleString()}</td><td style="color:var(--amber)">${con.toLocaleString()}</td><td style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'+':''}${net.toLocaleString()}</td><td style="font-weight:700">${Math.max(0,cb).toLocaleString()}</td>`;dtb.appendChild(tr);});}
+function renderStock(){const w=getWork();const ob=w.ob||0;const arrived=w.tankers.reduce((a,t)=>a+t.nwt,0);const consumed=w.dispatches.reduce((a,e)=>a+(e.bitu||0),0);const totalIn=ob+arrived;const bal=Math.max(0,totalIn-consumed);const pct=totalIn>0?Math.round(bal/totalIn*100):0;document.getElementById('stkStats').innerHTML=`<div class="sc"><div class="sl">Opening</div><div class="sv">${ob.toLocaleString()}<span class="su">kg</span></div></div><div class="sc green"><div class="sl">Arrived</div><div class="sv">${arrived.toLocaleString()}<span class="su">kg</span></div></div><div class="sc green"><div class="sl">Available</div><div class="sv">${totalIn.toLocaleString()}<span class="su">kg</span></div></div><div class="sc amber"><div class="sl">Consumed</div><div class="sv">${consumed.toLocaleString()}<span class="su">kg</span></div></div><div class="sc ${pct<20?'red':pct<40?'amber':'green'}"><div class="sl">Balance</div><div class="sv">${bal.toLocaleString()}<span class="su">kg</span></div></div>`;const sf=document.getElementById('stkBar');sf.style.width=pct+'%';sf.className='bar-fill'+(pct<20?' low':pct<40?' mid':'');document.getElementById('stkBarLbl').textContent=pct+'% remaining';const tb=document.getElementById('stkMatTbody');tb.innerHTML='';let any=false;BMATS.forEach(m=>{const rows=w.dispatches.filter(d=>d.m===m);if(!rows.length)return;any=true;const mix=rows.reduce((a,e)=>a+e.nwt,0),bitu=rows.reduce((a,e)=>a+(e.bitu||0),0);const tr=document.createElement('tr');tr.innerHTML=`<td>${mBadge(m)}</td><td style="color:var(--amber)">${w.bituPct[m]?w.bituPct[m]+'%':'—'}</td><td>${rows.length}</td><td>${mix.toLocaleString()}</td><td style="font-weight:700;color:var(--amber)">${bitu.toLocaleString()}</td>`;tb.appendChild(tr);});if(!any)tb.innerHTML='<tr><td colspan="5" class="empty-msg">No dispatch data</td></tr>';}
+
+// ═══════════════════════════════════════════════════════
+// MATERIAL MODULE
+// ═══════════════════════════════════════════════════════
+function srcClass(s){const m={Pitol:'b-blue',Alaknanda:'b-green',Meghnagar:'b-red',Devzari:'b-amber',Thandla:'b-teal',Other:'b-gray'};return m[s]||'b-gray';}
+function matBadge(m){const map={dust:'b-gray','6mm':'b-purple','10mm':'b-green','20mm':'b-blue','40mm':'b-amber','65mm':'b-red'};return`<span class="badge ${map[m]||'b-gray'}">${MLBL[m]||m}</span>`;}
+function addMatEntry(){const v=document.getElementById('mVehicle').value.trim().toUpperCase();const src=document.getElementById('mSource').value;const mat=document.getElementById('mType').value;const g=parseFloat(document.getElementById('mGwt').value);const t=parseFloat(document.getElementById('mTwt').value);const time=document.getElementById('mTime').value;if(!v){alert('Enter vehicle number.');return;}if(!src){alert('Select source.');return;}if(!mat){alert('Select material.');return;}if(!g||!t){alert('Enter weights.');return;}matEntries.push({id:Date.now(),date:getMatDate(),time,v,src,mat,g,t,nwt:Math.max(0,g-t)});['mVehicle','mGwt','mTwt','mNwt'].forEach(id=>document.getElementById(id).value='');saveAll();renderMatToday();showToast('Entry saved');}
+function deleteMatEntry(id){matEntries=matEntries.filter(e=>e.id!==id);saveAll();renderMatToday();}
+function renderMatToday(){const today=getMatDate();const rows=matEntries.filter(e=>e.date===today);document.getElementById('matTodayTitle').textContent=`Entries — ${today} (${rows.length})`;const total=rows.reduce((a,e)=>a+e.nwt,0);document.getElementById('matTodayStats').innerHTML=`<div class="sc blue"><div class="sl">Trips Today</div><div class="sv">${rows.length}</div></div><div class="sc green"><div class="sl">Total Today</div><div class="sv">${total.toLocaleString()}<span class="su">kg</span></div></div><div class="sc"><div class="sl">Sources</div><div class="sv">${[...new Set(rows.map(e=>e.src))].length}</div></div><div class="sc"><div class="sl">Mat Types</div><div class="sv">${[...new Set(rows.map(e=>e.mat))].length}</div></div>`;const tb=document.getElementById('matTodayTbody');if(!rows.length){tb.innerHTML='<tr><td colspan="10" class="empty-msg">No entries today</td></tr>';return;}let run=0;tb.innerHTML='';rows.forEach((e,i)=>{run+=e.nwt;const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td style="font-family:var(--font-mono)">${e.time||'—'}</td><td style="color:var(--amber)">${e.v}</td><td><span class="badge ${srcClass(e.src)}">${e.src}</span></td><td>${matBadge(e.mat)}</td><td>${e.g.toLocaleString()}</td><td>${e.t.toLocaleString()}</td><td style="font-weight:600">${e.nwt.toLocaleString()}</td><td style="color:var(--green)">${run.toLocaleString()}</td><td><button class="btn-del" onclick="deleteMatEntry(${e.id})">✕</button></td>`;tb.appendChild(tr);});}
+function switchMatTab(name){['entry','log','report'].forEach((n,i)=>{document.querySelectorAll('#screen-material .tab')[i].classList.toggle('active',n===name);document.getElementById('mtp-'+n).classList.toggle('active',n===name);});if(name==='log')renderMatLog();if(name==='report'){buildMatChips();renderMatReport();}}
+function filterMat(from,to,src,mat){return matEntries.filter(e=>{if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(src&&e.src!==src)return false;if(mat&&e.mat!==mat)return false;return true;});}
+function renderMatLog(){const rows=[...filterMat(document.getElementById('mlFrom').value,document.getElementById('mlTo').value,document.getElementById('mlSrc').value,document.getElementById('mlMat').value)].sort((a,b)=>a.date<b.date?-1:1);const total=rows.reduce((a,e)=>a+e.nwt,0);document.getElementById('matLogStats').innerHTML=`<div class="sc blue"><div class="sl">Trips</div><div class="sv">${rows.length}</div></div><div class="sc green"><div class="sl">Total</div><div class="sv">${total.toLocaleString()}<span class="su">kg</span></div></div>`;document.getElementById('matLogTitle').textContent=`Entries — ${rows.length} results`;const tb=document.getElementById('matLogTbody');if(!rows.length){tb.innerHTML='<tr><td colspan="10" class="empty-msg">No entries match</td></tr>';return;}tb.innerHTML='';rows.forEach((e,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${e.date}</td><td style="font-family:var(--font-mono)">${e.time||'—'}</td><td style="color:var(--amber)">${e.v}</td><td><span class="badge ${srcClass(e.src)}">${e.src}</span></td><td>${matBadge(e.mat)}</td><td>${e.g.toLocaleString()}</td><td>${e.t.toLocaleString()}</td><td style="font-weight:600">${e.nwt.toLocaleString()}</td><td><button class="btn-del" onclick="deleteMatEntry(${e.id});renderMatLog()">✕</button></td>`;tb.appendChild(tr);});}
+function clearMatLog(){['mlFrom','mlTo'].forEach(id=>document.getElementById(id).value='');document.getElementById('mlSrc').value='';document.getElementById('mlMat').value='';renderMatLog();}
+function buildMatChips(){const sc=document.getElementById('mrSrcChips');sc.innerHTML='';MSRCS.forEach(s=>{const c=document.createElement('div');c.className='chip'+(mrSrcF.includes(s)?' on':'');c.textContent=s;c.onclick=()=>{mrSrcF.includes(s)?mrSrcF=mrSrcF.filter(x=>x!==s):mrSrcF.push(s);buildMatChips();renderMatReport();};sc.appendChild(c);});const mc=document.getElementById('mrMatChips');mc.innerHTML='';MMATS.forEach(m=>{const c=document.createElement('div');c.className='chip'+(mrMatF.includes(m)?' on':'');c.textContent=MLBL[m];c.onclick=()=>{mrMatF.includes(m)?mrMatF=mrMatF.filter(x=>x!==m):mrMatF.push(m);buildMatChips();renderMatReport();};mc.appendChild(c);});}
+function renderMatReport(){const from=document.getElementById('mrFrom').value;const to=document.getElementById('mrTo').value;let rows=matEntries.filter(e=>{if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(mrSrcF.length&&!mrSrcF.includes(e.src))return false;if(mrMatF.length&&!mrMatF.includes(e.mat))return false;return true;});const out=document.getElementById('matReportOut');if(!rows.length){out.innerHTML='<div class="section"><div class="empty-msg">No data for selected filters</div></div>';return;}const total=rows.reduce((a,e)=>a+e.nwt,0);let html=`<div class="stats-grid"><div class="sc blue"><div class="sl">Trips</div><div class="sv">${rows.length}</div></div><div class="sc green"><div class="sl">Total</div><div class="sv">${total.toLocaleString()}<span class="su">kg</span></div></div><div class="sc green"><div class="sl">In MT</div><div class="sv">${(total/1000).toFixed(2)}<span class="su">MT</span></div></div></div>`;html+=`<div class="section"><div class="section-title">Material-wise</div>`;const matT={};MMATS.forEach(m=>{const t=rows.filter(e=>e.mat===m).reduce((a,e)=>a+e.nwt,0);if(t)matT[m]=t;});const mx=Math.max(...Object.values(matT),1);Object.entries(matT).sort((a,b)=>b[1]-a[1]).forEach(([m,t])=>{html+=`<div class="rpt-row">${matBadge(m)}<div class="rpt-bar"><div class="rpt-fill" style="width:${Math.round(t/mx*100)}%"></div></div><span style="font-size:12px;font-weight:600;min-width:85px;text-align:right;font-family:var(--font-mono)">${t.toLocaleString()} kg</span></div>`;});html+=`</div><div class="section"><div class="section-title">Source-wise</div>`;const srcT={};MSRCS.forEach(s=>{const t=rows.filter(e=>e.src===s).reduce((a,e)=>a+e.nwt,0);if(t)srcT[s]=t;});const ms=Math.max(...Object.values(srcT),1);Object.entries(srcT).sort((a,b)=>b[1]-a[1]).forEach(([s,t])=>{html+=`<div class="rpt-row"><span class="badge ${srcClass(s)}" style="min-width:65px;text-align:center">${s}</span><div class="rpt-bar"><div class="rpt-fill" style="width:${Math.round(t/ms*100)}%;background:var(--blue)"></div></div><span style="font-size:12px;font-weight:600;min-width:85px;text-align:right;font-family:var(--font-mono)">${t.toLocaleString()} kg</span></div>`;});html+=`</div>`;out.innerHTML=html;}
+function clearMatReport(){['mrFrom','mrTo'].forEach(id=>document.getElementById(id).value='');mrSrcF=[];mrMatF=[];buildMatChips();renderMatReport();}
+
+// ═══════════════════════════════════════════════════════
+// EXPENSE MODULE
+// ═══════════════════════════════════════════════════════
+function fmtR(n){return'₹'+Math.round(n).toLocaleString('en-IN');}
+function setExpMode(m){expMode=m;document.getElementById('incForm').style.display=m==='income'?'block':'none';document.getElementById('expForm').style.display=m==='expense'?'block':'none';document.getElementById('btnInc').className='tgl'+(m==='income'?' inc':'');document.getElementById('btnExp').className='tgl'+(m==='expense'?' exp':'');}
+function onCatChg(){const c=document.getElementById('eCat').value;document.getElementById('drvField').style.display=c==='driver'?'flex':'none';document.getElementById('othField').style.display=c==='other'?'flex':'none';document.getElementById('spareField').style.display='none';}
+function onOthChg(){document.getElementById('spareField').style.display=document.getElementById('eOthType').value==='Spare Parts'?'flex':'none';}
+function populateDriverSelects(){['eDriver','dsDriver'].forEach(sid=>{const sel=document.getElementById(sid);if(!sel)return;const cur=sel.value;sel.innerHTML=sid==='dsDriver'?'<option value="">All Drivers</option>':'<option value="">— Select —</option>';drivers.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;if(d===cur)o.selected=true;sel.appendChild(o);});});}
+function kindBadge(e){if(e.kind==='income')return'<span class="badge b-green">Income</span>';if(e.cat==='driver')return'<span class="badge b-purple">Driver</span>';return'<span class="badge b-red">Expense</span>';}
+function modeBadge(m){return m==='Cash'?'<span class="badge b-cash">Cash</span>':m==='Online'?'<span class="badge b-online">Online</span>':'<span class="badge b-gray">'+m+'</span>';}
+function addIncome(){const amt=parseFloat(document.getElementById('iAmt').value);if(!amt||amt<=0){alert('Enter amount.');return;}expEntries.push({id:Date.now(),date:getExpDate(),kind:'income',cat:'income',detail:document.getElementById('iFrom').value.trim()||'—',subDetail:document.getElementById('iRemark').value.trim(),mode:document.getElementById('iMode').value,amount:amt});['iAmt','iFrom','iRemark'].forEach(id=>document.getElementById(id).value='');saveAll();renderExpToday();showToast('Income saved');}
+function addExpense(){const amt=parseFloat(document.getElementById('eAmt').value);if(!amt||amt<=0){alert('Enter amount.');return;}const cat=document.getElementById('eCat').value;let detail='';if(cat==='driver'){detail=document.getElementById('eDriver').value;if(!detail){alert('Select driver.');return;}}else{detail=document.getElementById('eOthType').value;if(!detail){alert('Select type.');return;}if(detail==='Spare Parts'){const sp=document.getElementById('eSpare').value;if(sp)detail+=' — '+sp;}}const paid=document.getElementById('ePaidTo').value.trim();if(paid)detail+=' · '+paid;expEntries.push({id:Date.now(),date:getExpDate(),kind:'expense',cat,detail,subDetail:document.getElementById('eRemark').value.trim(),mode:document.getElementById('eMode').value,amount:amt});['eAmt','ePaidTo','eRemark'].forEach(id=>document.getElementById(id).value='');saveAll();renderExpToday();showToast('Expense saved');}
+function deleteExpEntry(id){expEntries=expEntries.filter(e=>e.id!==id);saveAll();renderExpToday();}
+function renderExpToday(){const today=getExpDate();const rows=expEntries.filter(e=>e.date===today);document.getElementById('expTodayTitle').textContent=`Transactions — ${today}`;const inc=rows.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);const exp=rows.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);document.getElementById('expTodayStats').innerHTML=`<div class="sc green"><div class="sl">Income Today</div><div class="sv">${fmtR(inc)}</div></div><div class="sc red"><div class="sl">Expense Today</div><div class="sv">${fmtR(exp)}</div></div><div class="sc ${inc-exp>=0?'blue':'amber'}"><div class="sl">Net Today</div><div class="sv">${fmtR(inc-exp)}</div></div><div class="sc"><div class="sl">Transactions</div><div class="sv">${rows.length}</div></div>`;const tb=document.getElementById('expTodayTbody');if(!rows.length){tb.innerHTML='<tr><td colspan="9" class="empty-msg">No entries today</td></tr>';return;}let bal=0;tb.innerHTML='';rows.forEach((e,i)=>{bal+=e.kind==='income'?e.amount:-e.amount;const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${e.date}</td><td>${kindBadge(e)}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text2)">${e.detail}</td><td style="font-size:11px;color:var(--text3)">${e.subDetail||'—'}</td><td>${modeBadge(e.mode)}</td><td style="font-weight:700;font-family:var(--font-mono);color:${e.kind==='income'?'var(--green)':'var(--red)'}">${fmtR(e.amount)}</td><td style="font-weight:700;font-family:var(--font-mono);color:${bal>=0?'var(--green)':'var(--red)'}">${fmtR(bal)}</td><td><button class="btn-del" onclick="deleteExpEntry(${e.id})">✕</button></td>`;tb.appendChild(tr);});}
+function switchExpTab(name){const ns=['entry','ledger','drivers','report'];document.querySelectorAll('#screen-expense .tab').forEach((t,i)=>t.classList.toggle('active',ns[i]===name));ns.forEach(n=>document.getElementById('etp-'+n).classList.toggle('active',n===name));if(name==='ledger')renderExpLedger();if(name==='report')renderExpReport();if(name==='drivers'){populateDriverSelects();renderDriverSummary();}}
+function filterExp(from,to,type){return expEntries.filter(e=>{if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(type&&e.kind!==type)return false;return true;});}
+function renderExpLedger(){const rows=[...filterExp(document.getElementById('elFrom').value,document.getElementById('elTo').value,document.getElementById('elType').value)].sort((a,b)=>a.date<b.date?-1:1);const inc=rows.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);const exp=rows.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);document.getElementById('expLedgerStats').innerHTML=`<div class="sc green"><div class="sl">Total Income</div><div class="sv">${fmtR(inc)}</div></div><div class="sc red"><div class="sl">Total Expense</div><div class="sv">${fmtR(exp)}</div></div><div class="sc ${inc-exp>=0?'blue':'amber'}"><div class="sl">Net Balance</div><div class="sv">${fmtR(inc-exp)}</div></div><div class="sc"><div class="sl">Entries</div><div class="sv">${rows.length}</div></div>`;document.getElementById('expLedgerTitle').textContent=`All Transactions — ${rows.length} entries`;const tb=document.getElementById('expLedgerTbody');if(!rows.length){tb.innerHTML='<tr><td colspan="9" class="empty-msg">No entries</td></tr>';return;}let rb=0;tb.innerHTML='';rows.forEach((e,i)=>{rb+=e.kind==='income'?e.amount:-e.amount;const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${e.date}</td><td>${kindBadge(e)}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text2)">${e.detail}</td><td>${modeBadge(e.mode)}</td><td style="color:var(--green);font-weight:700;font-family:var(--font-mono)">${e.kind==='income'?fmtR(e.amount):'—'}</td><td style="color:var(--red);font-family:var(--font-mono)">${e.kind==='expense'?fmtR(e.amount):'—'}</td><td style="font-weight:700;font-family:var(--font-mono);color:${rb>=0?'var(--green)':'var(--red)'}">${fmtR(rb)}</td><td><button class="btn-del" onclick="deleteExpEntry(${e.id});renderExpLedger()">✕</button></td>`;tb.appendChild(tr);});}
+function clearExpLedger(){['elFrom','elTo'].forEach(id=>document.getElementById(id).value='');document.getElementById('elType').value='';renderExpLedger();}
+function setDrvSort(s){drvSort=s;['amt','trips','name'].forEach(k=>{document.getElementById('dsb-'+k).className='sort-btn'+(k===s?' on':'');});renderDriverSummary();}
+function renderDriverSummary(){const from=document.getElementById('dsFrom').value;const to=document.getElementById('dsTo').value;const filterDrv=document.getElementById('dsDriver').value;const filterMode=document.getElementById('dsMode').value;const rows=expEntries.filter(e=>{if(e.kind!=='expense'||e.cat!=='driver')return false;if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(filterDrv&&e.detail.split(' · ')[0]!==filterDrv)return false;if(filterMode&&e.mode!==filterMode)return false;return true;});const totalAmt=rows.reduce((a,e)=>a+e.amount,0);const uniqueDrvs=[...new Set(rows.map(e=>e.detail.split(' · ')[0]))];const cashAmt=rows.filter(e=>e.mode==='Cash').reduce((a,e)=>a+e.amount,0);const onlineAmt=rows.filter(e=>e.mode==='Online').reduce((a,e)=>a+e.amount,0);document.getElementById('dsStats').innerHTML=`<div class="sc red"><div class="sl">Total Paid</div><div class="sv">${fmtR(totalAmt)}</div></div><div class="sc blue"><div class="sl">Active Drivers</div><div class="sv">${uniqueDrvs.length}</div></div><div class="sc"><div class="sl">Transactions</div><div class="sv">${rows.length}</div></div><div class="sc amber"><div class="sl">Cash Paid</div><div class="sv">${fmtR(cashAmt)}</div></div><div class="sc"><div class="sl">Online Paid</div><div class="sv">${fmtR(onlineAmt)}</div></div>`;const byDriver={};rows.forEach(e=>{const name=e.detail.split(' · ')[0];if(!byDriver[name])byDriver[name]={name,total:0,trips:0,txns:[]};byDriver[name].total+=e.amount;byDriver[name].trips++;byDriver[name].txns.push(e);});let dArr=Object.values(byDriver);if(drvSort==='amt')dArr.sort((a,b)=>b.total-a.total);else if(drvSort==='trips')dArr.sort((a,b)=>b.trips-a.trips);else dArr.sort((a,b)=>a.name.localeCompare(b.name));const maxAmt=dArr.length?Math.max(...dArr.map(d=>d.total)):1;const con=document.getElementById('driverCards');con.innerHTML='';if(!dArr.length){con.innerHTML='<div class="empty-msg">No driver entries for this filter</div>';return;}dArr.forEach(d=>{const pct=totalAmt>0?Math.round(d.total/totalAmt*100):0;const barW=Math.round(d.total/maxAmt*100);const isExp=expandedDriver===d.name;const initials=d.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();const div=document.createElement('div');div.className='driver-card'+(isExp?' expanded':'');div.innerHTML=`<div class="dc-top" onclick="toggleDriver('${d.name.replace(/'/g,"\\'")}')"><div class="dc-avatar">${initials}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><div class="dc-name">${d.name}</div><div style="display:flex;align-items:center;gap:6px"><div class="dc-amt">${fmtR(d.total)}</div><span class="dc-chevron${isExp?' open':''}">▶</span></div></div><span class="dc-trips">${d.trips} txn${d.trips!==1?'s':''} · ${pct}%</span><div class="dbar-track"><div class="dbar-fill" style="width:${barW}%"></div></div></div></div><div class="dc-detail${isExp?' open':''}"><table class="t" style="margin-top:8px"><thead><tr><th>Date</th><th>Remark</th><th>Mode</th><th>Amount</th></tr></thead><tbody>${d.txns.sort((a,b)=>a.date<b.date?1:-1).map(tx=>`<tr><td>${tx.date}</td><td style="color:var(--text2)">${tx.subDetail||'—'}</td><td>${modeBadge(tx.mode)}</td><td style="font-weight:700;color:var(--red);font-family:var(--font-mono)">${fmtR(tx.amount)}</td></tr>`).join('')}<tr class="total-row"><td colspan="3">Total — ${d.name}</td><td style="color:var(--red);font-family:var(--font-mono)">${fmtR(d.total)}</td></tr></tbody></table></div>`;con.appendChild(div);});}
+function toggleDriver(name){expandedDriver=expandedDriver===name?null:name;renderDriverSummary();}
+function clearDriverSummary(){document.getElementById('dsFrom').value=todayStr();document.getElementById('dsTo').value=todayStr();document.getElementById('dsDriver').value='';document.getElementById('dsMode').value='';renderDriverSummary();}
+function renderExpReport(){const from=document.getElementById('erFrom').value;const to=document.getElementById('erTo').value;const rows=filterExp(from,to,'');const out=document.getElementById('expReportOut');if(!rows.length){out.innerHTML='<div class="section"><div class="empty-msg">No data for this range</div></div>';return;}const inc=rows.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);const exp=rows.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);const dExp=rows.filter(e=>e.cat==='driver').reduce((a,e)=>a+e.amount,0);const oExp=rows.filter(e=>e.cat==='other').reduce((a,e)=>a+e.amount,0);let html=`<div class="stats-grid"><div class="sc green"><div class="sl">Total Income</div><div class="sv">${fmtR(inc)}</div></div><div class="sc red"><div class="sl">Total Expense</div><div class="sv">${fmtR(exp)}</div></div><div class="sc ${inc-exp>=0?'blue':'amber'}"><div class="sl">Net Balance</div><div class="sv">${fmtR(inc-exp)}</div></div></div>`;const dr=rows.filter(e=>e.cat==='driver');if(dr.length){const bd={};dr.forEach(e=>{const n=e.detail.split(' · ')[0];bd[n]=(bd[n]||0)+e.amount;});html+=`<div class="section"><div class="section-title">Driver-wise expense</div><div class="tbl-wrap"><table class="t"><thead><tr><th>Driver</th><th>Amount</th></tr></thead><tbody>`;Object.entries(bd).sort((a,b)=>b[1]-a[1]).forEach(([d,a])=>{html+=`<tr><td><span class="badge b-purple">${d}</span></td><td style="font-weight:700;color:var(--red);font-family:var(--font-mono)">${fmtR(a)}</td></tr>`;});html+=`<tr class="total-row"><td>Total</td><td style="font-family:var(--font-mono);color:var(--red)">${fmtR(dExp)}</td></tr></tbody></table></div></div>`;}const or=rows.filter(e=>e.cat==='other');if(or.length){const bc={};or.forEach(e=>{const t=e.detail.split(' — ')[0].split(' · ')[0];bc[t]=(bc[t]||0)+e.amount;});html+=`<div class="section"><div class="section-title">Other expense breakdown</div><div class="tbl-wrap"><table class="t"><thead><tr><th>Type</th><th>Amount</th></tr></thead><tbody>`;Object.entries(bc).sort((a,b)=>b[1]-a[1]).forEach(([t,a])=>{html+=`<tr><td><span class="badge b-amber">${t}</span></td><td style="font-weight:700;font-family:var(--font-mono)">${fmtR(a)}</td></tr>`;});html+=`<tr class="total-row"><td>Total</td><td style="font-family:var(--font-mono)">${fmtR(oExp)}</td></tr></tbody></table></div></div>`;}const allDates=[...new Set(rows.map(e=>e.date))].sort();html+=`<div class="section"><div class="section-title">Date-wise summary</div><div class="tbl-wrap"><table class="t"><thead><tr><th>Date</th><th>Income</th><th>Expense</th><th>Net</th></tr></thead><tbody>`;allDates.forEach(d=>{const dr2=rows.filter(e=>e.date===d);const di=dr2.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);const de=dr2.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);html+=`<tr><td>${d}</td><td style="color:var(--green);font-family:var(--font-mono)">${di>0?fmtR(di):'—'}</td><td style="color:var(--red);font-family:var(--font-mono)">${de>0?fmtR(de):'—'}</td><td style="font-weight:700;font-family:var(--font-mono);color:${di-de>=0?'var(--green)':'var(--red)'}">${fmtR(di-de)}</td></tr>`;});html+=`</tbody></table></div></div>`;out.innerHTML=html;}
+function clearExpReport(){['erFrom','erTo'].forEach(id=>document.getElementById(id).value='');renderExpReport();}
+function addDriver(){const inp=document.getElementById('newDriver');const name=inp.value.trim();if(!name)return;if(!drivers.includes(name))drivers.push(name);inp.value='';saveAll();populateDriverSelects();renderDriverList();showToast('Driver added');}
+function removeDriver(i){if(!confirm('Remove '+drivers[i]+'?'))return;drivers.splice(i,1);saveAll();populateDriverSelects();renderDriverList();}
+function renderDriverList(){const c=document.getElementById('driverListEl');c.innerHTML='';drivers.forEach((d,i)=>{const r=document.createElement('div');r.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-bottom:1px solid var(--border)';r.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><span style="font-size:10px;color:var(--text3);font-family:var(--font-mono);min-width:22px">${String(i+1).padStart(2,'0')}</span><span style="font-size:13px;font-weight:500">${d}</span></div><button class="btn-del" onclick="removeDriver(${i})">Remove</button>`;c.appendChild(r);});}
+
+function addVehicle(){const inp=document.getElementById('newVehicle');const v=inp.value.trim().toUpperCase();if(!v)return;if(!vehicles.includes(v))vehicles.push(v);else{showToast('Vehicle already exists');return;}inp.value='';saveAll();renderVehicleList();showToast('Vehicle added');}
+function removeVehicle(i){if(!confirm('Remove '+vehicles[i]+' from list?'))return;vehicles.splice(i,1);saveAll();renderVehicleList();}
+function renderVehicleList(){const c=document.getElementById('vehicleListEl');if(!c)return;c.innerHTML='';vehicles.forEach((v,i)=>{const r=document.createElement('div');r.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-bottom:1px solid var(--border)';r.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><span style="font-size:10px;color:var(--text3);font-family:var(--font-mono);min-width:22px">${String(i+1).padStart(2,'0')}</span><span style="font-size:13px;font-weight:500;font-family:var(--font-mono);color:var(--amber)">${v}</span></div><button class="btn-del" onclick="removeVehicle(${i})">Remove</button>`;c.appendChild(r);});}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT HELPERS
+// ═══════════════════════════════════════════════════════
+function getWorkInfo(){const w=getWork();return w?`${w.name}${w.agreement?' | '+w.agreement:''}${w.dept?' | '+w.dept:''}`:'Plant Site Registers';}
+
+// ── EXCEL HELPERS ──
+function dlExcel(data,filename){
+  try{
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Data');
+    XLSX.writeFile(wb,filename+'.csv');
+    showToast('Excel (CSV) downloaded! Open in Excel.');
+  }catch(e){showToast('Export error: '+e.message);}
+}
+
+// ── PDF HELPERS ──
+function dlPDF(title,subtitle,head,body,filename){
+  try{
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'landscape'});
+    doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text(title,14,15);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.setTextColor(120);doc.text(subtitle,14,21);
+    doc.setTextColor(0);
+    doc.autoTable({head:[head],body,startY:25});
+    doc.save(filename+'.pdf');
+  }catch(e){showToast('Export error: '+e.message);}
+}
+
+// ── DISPATCH EXPORTS ──
+function exportDispatchExcel(){
+  const w=getWork();if(!w||!w.dispatches.length){showToast('No dispatch data');return;}
+  const rows=[['Sr','Date','Vehicle','Material','Gross Wt','Tare Wt','Net Wt','Running Mix','Bitu Used','Cum Bitu']];
+  let rm=0,rb=0;
+  w.dispatches.forEach((e,i)=>{rm+=e.nwt;rb+=e.bitu||0;rows.push([i+1,e.date,e.v,e.m,e.g,e.t,e.nwt,rm,e.bitu??'',rb]);});
+  dlExcel(rows,`Dispatch_${w.name}_${todayStr()}`);
+}
+function exportDispatchPDF(){
+  const w=getWork();if(!w||!w.dispatches.length){showToast('No dispatch data');return;}
+  let rm=0,rb=0;
+  const body=w.dispatches.map((e,i)=>{rm+=e.nwt;rb+=e.bitu||0;return[i+1,e.date,e.v,e.m,e.g.toLocaleString(),e.t.toLocaleString(),e.nwt.toLocaleString(),rm.toLocaleString(),e.bitu!=null?e.bitu.toLocaleString():'—',rb.toLocaleString()];});
+  dlPDF('Dispatch Log',getWorkInfo(),['Sr','Date','Vehicle','Mat','G.Wt','T.Wt','N.Wt','Run.Mix','Bitu','Cum.Bitu'],body,`Dispatch_${w.name}_${todayStr()}`);
+}
+
+// ── TANKER EXPORTS ──
+function exportTankerExcel(){
+  const w=getWork();if(!w||!w.tankers.length){showToast('No tanker data');return;}
+  const rows=[['Sr','Date','Tanker No','Supplier','Grade','Gross Wt','Tare Wt','Net Bitumen','Invoice','Cumulative']];
+  let cum=0;
+  w.tankers.forEach((t,i)=>{cum+=t.nwt;rows.push([i+1,t.date,t.vno,t.sup,t.grade,t.g,t.t,t.nwt,t.inv,cum]);});
+  dlExcel(rows,`Tankers_${w.name}_${todayStr()}`);
+}
+function exportTankerPDF(){
+  const w=getWork();if(!w||!w.tankers.length){showToast('No tanker data');return;}
+  let cum=0;
+  const body=w.tankers.map((t,i)=>{cum+=t.nwt;return[i+1,t.date,t.vno,t.sup||'—',t.grade,t.g.toLocaleString(),t.t.toLocaleString(),t.nwt.toLocaleString(),t.inv||'—',cum.toLocaleString()];});
+  dlPDF('Tanker Arrival Log',getWorkInfo(),['Sr','Date','Tanker','Supplier','Grade','G.Wt','T.Wt','Net Bitu','Invoice','Cumul.'],body,`Tankers_${w.name}_${todayStr()}`);
+}
+
+// ── LEDGER EXPORTS ──
+function exportLedgerExcel(){
+  const w=getWork();if(!w){return;}
+  const ob=w.ob||0;
+  let txns=[];
+  if(ob>0)txns.push({date:'—',type:'OB',detail:'Opening stock',inKg:ob,outKg:0});
+  w.tankers.forEach(t=>txns.push({date:t.date,type:'IN',detail:`${t.vno} · ${t.grade}`,inKg:t.nwt,outKg:0}));
+  w.dispatches.forEach(e=>txns.push({date:e.date,type:'OUT',detail:`${e.v} · ${e.m}`,inKg:0,outKg:e.bitu||0}));
+  txns.sort((a,b)=>a.date<b.date?-1:1);
+  const rows=[['Sr','Date','Type','Details','IN (kg)','OUT (kg)','Balance (kg)']];
+  let rb=0;
+  txns.forEach((tx,i)=>{rb+=tx.inKg-tx.outKg;rows.push([i+1,tx.date,tx.type,tx.detail,tx.inKg||'—',tx.outKg||'—',Math.max(0,rb)]);});
+  dlExcel(rows,`BitumenLedger_${w.name}_${todayStr()}`);
+}
+function exportLedgerPDF(){
+  const w=getWork();if(!w){return;}
+  const ob=w.ob||0;
+  let txns=[];
+  if(ob>0)txns.push({date:'—',type:'OB',detail:'Opening stock',inKg:ob,outKg:0});
+  w.tankers.forEach(t=>txns.push({date:t.date,type:'IN',detail:`${t.vno} · ${t.grade}`,inKg:t.nwt,outKg:0}));
+  w.dispatches.forEach(e=>txns.push({date:e.date,type:'OUT',detail:`${e.v} · ${e.m}`,inKg:0,outKg:e.bitu||0}));
+  txns.sort((a,b)=>a.date<b.date?-1:1);
+  let rb=0;
+  const body=txns.map((tx,i)=>{rb+=tx.inKg-tx.outKg;return[i+1,tx.date,tx.type,tx.detail,tx.inKg?tx.inKg.toLocaleString():'—',tx.outKg?tx.outKg.toLocaleString():'—',Math.max(0,rb).toLocaleString()];});
+  dlPDF('Bitumen Ledger',getWorkInfo(),['Sr','Date','Type','Details','IN (kg)','OUT (kg)','Balance'],body,`BitumenLedger_${w.name}_${todayStr()}`);
+}
+
+// ── MATERIAL TODAY EXPORTS ──
+function exportMatTodayExcel(){
+  const today=getMatDate();const rows_data=matEntries.filter(e=>e.date===today);
+  if(!rows_data.length){showToast('No data for today');return;}
+  const rows=[['Sr','Date','Time','Vehicle','Source','Material','Gross Wt','Tare Wt','Net Wt','Running Total']];
+  let run=0;rows_data.forEach((e,i)=>{run+=e.nwt;rows.push([i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g,e.t,e.nwt,run]);});
+  dlExcel(rows,`MaterialToday_${today}`);
+}
+function exportMatTodayPDF(){
+  const today=getMatDate();const rows_data=matEntries.filter(e=>e.date===today);
+  if(!rows_data.length){showToast('No data for today');return;}
+  let run=0;const body=rows_data.map((e,i)=>{run+=e.nwt;return[i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g.toLocaleString(),e.t.toLocaleString(),e.nwt.toLocaleString(),run.toLocaleString()];});
+  dlPDF(`Material Inward — ${today}`,'Plant Site',['Sr','Date','Time','Vehicle','Source','Material','G.Wt','T.Wt','N.Wt','Running'],body,`MaterialToday_${today}`);
+}
+
+// ── MATERIAL LOG EXPORTS ──
+function _getMatLogRows(){return[...filterMat(document.getElementById('mlFrom').value,document.getElementById('mlTo').value,document.getElementById('mlSrc').value,document.getElementById('mlMat').value)].sort((a,b)=>a.date<b.date?-1:1);}
+function exportMatLogExcel(){
+  const rows_data=_getMatLogRows();if(!rows_data.length){showToast('No data');return;}
+  const rows=[['Sr','Date','Time','Vehicle','Source','Material','Gross Wt','Tare Wt','Net Wt']];
+  rows_data.forEach((e,i)=>rows.push([i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g,e.t,e.nwt]));
+  dlExcel(rows,`MaterialLog_${todayStr()}`);
+}
+function exportMatLogPDF(){
+  const rows_data=_getMatLogRows();if(!rows_data.length){showToast('No data');return;}
+  const body=rows_data.map((e,i)=>[i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g.toLocaleString(),e.t.toLocaleString(),e.nwt.toLocaleString()]);
+  dlPDF('Material Inward Log','Plant Site Register',['Sr','Date','Time','Vehicle','Source','Material','G.Wt','T.Wt','N.Wt'],body,`MaterialLog_${todayStr()}`);
+}
+
+// ── MATERIAL REPORT EXPORTS ──
+function _getMatRptRows(){const from=document.getElementById('mrFrom').value;const to=document.getElementById('mrTo').value;return matEntries.filter(e=>{if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(mrSrcF.length&&!mrSrcF.includes(e.src))return false;if(mrMatF.length&&!mrMatF.includes(e.mat))return false;return true;});}
+function exportMatReportExcel(){
+  const rows_data=_getMatRptRows();if(!rows_data.length){showToast('No data');return;}
+  const rows=[['Sr','Date','Time','Vehicle','Source','Material','Gross Wt','Tare Wt','Net Wt']];
+  rows_data.forEach((e,i)=>rows.push([i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g,e.t,e.nwt]));
+  const total=rows_data.reduce((a,e)=>a+e.nwt,0);
+  rows.push(['','','','','','','','TOTAL',total]);
+  dlExcel(rows,`MaterialReport_${todayStr()}`);
+}
+function exportMatReportPDF(){
+  const rows_data=_getMatRptRows();if(!rows_data.length){showToast('No data');return;}
+  const body=rows_data.map((e,i)=>[i+1,e.date,e.time||'—',e.v,e.src,MLBL[e.mat]||e.mat,e.g.toLocaleString(),e.t.toLocaleString(),e.nwt.toLocaleString()]);
+  const total=rows_data.reduce((a,e)=>a+e.nwt,0);
+  body.push(['','','','','','','','TOTAL',total.toLocaleString()]);
+  dlPDF('Material Inward Report','Plant Site',['Sr','Date','Time','Vehicle','Source','Material','G.Wt','T.Wt','N.Wt'],body,`MaterialReport_${todayStr()}`);
+}
+
+// ── EXPENSE TODAY EXPORTS ──
+function _getExpTodayRows(){return expEntries.filter(e=>e.date===getExpDate());}
+function exportExpTodayExcel(){
+  const rows_data=_getExpTodayRows();if(!rows_data.length){showToast('No data for today');return;}
+  const rows=[['Sr','Date','Type','Category','Details','Remark','Mode','Amount (Rs)','Balance']];
+  let bal=0;rows_data.forEach((e,i)=>{bal+=e.kind==='income'?e.amount:-e.amount;rows.push([i+1,e.date,e.kind.toUpperCase(),e.cat,e.detail,e.subDetail||'',e.mode,e.kind==='income'?e.amount:-e.amount,bal]);});
+  dlExcel(rows,`Expense_Today_${getExpDate()}`);
+}
+function exportExpTodayPDF(){
+  const rows_data=_getExpTodayRows();if(!rows_data.length){showToast('No data for today');return;}
+  let bal=0;const body=rows_data.map((e,i)=>{bal+=e.kind==='income'?e.amount:-e.amount;return[i+1,e.date,e.kind.toUpperCase(),e.detail,e.mode,e.kind==='income'?'Rs '+e.amount.toLocaleString():'—',e.kind==='expense'?'Rs '+e.amount.toLocaleString():'—','Rs '+bal.toLocaleString()];});
+  dlPDF(`Expense & Income — ${getExpDate()}`,'General Ledger',['Sr','Date','Type','Details','Mode','IN','OUT','Balance'],body,`Expense_Today_${getExpDate()}`);
+}
+
+// ── EXPENSE LEDGER EXPORTS ──
+function _getExpLedgerRows(){return[...filterExp(document.getElementById('elFrom').value,document.getElementById('elTo').value,document.getElementById('elType').value)].sort((a,b)=>a.date<b.date?-1:1);}
+function exportExpLedgerExcel(){
+  const rows_data=_getExpLedgerRows();if(!rows_data.length){showToast('No data');return;}
+  const rows=[['Sr','Date','Type','Category','Details','Remark','Mode','IN (Rs)','OUT (Rs)','Balance']];
+  let rb=0;rows_data.forEach((e,i)=>{rb+=e.kind==='income'?e.amount:-e.amount;rows.push([i+1,e.date,e.kind.toUpperCase(),e.cat,e.detail,e.subDetail||'',e.mode,e.kind==='income'?e.amount:'',e.kind==='expense'?e.amount:'',rb]);});
+  dlExcel(rows,`ExpenseLedger_${todayStr()}`);
+}
+function exportExpLedgerPDF(){
+  const rows_data=_getExpLedgerRows();if(!rows_data.length){showToast('No data');return;}
+  let rb=0;const body=rows_data.map((e,i)=>{rb+=e.kind==='income'?e.amount:-e.amount;return[i+1,e.date,e.kind.toUpperCase(),e.detail,e.mode,e.kind==='income'?'Rs '+e.amount.toLocaleString():'—',e.kind==='expense'?'Rs '+e.amount.toLocaleString():'—','Rs '+rb.toLocaleString()];});
+  dlPDF('Expense & Income Ledger','General Register',['Sr','Date','Type','Details','Mode','IN','OUT','Balance'],body,`ExpenseLedger_${todayStr()}`);
+}
+
+// ── EXPENSE REPORT EXPORTS ──
+function _getExpRptRows(){return filterExp(document.getElementById('erFrom').value,document.getElementById('erTo').value,'');}
+function exportExpReportExcel(){
+  const rows_data=_getExpRptRows();if(!rows_data.length){showToast('No data');return;}
+  const inc=rows_data.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);
+  const exp=rows_data.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);
+  const wb=XLSX.utils.book_new();
+  const rows=[['Sr','Date','Type','Category','Details','Mode','Amount (Rs)']];
+  rows_data.forEach((e,i)=>rows.push([i+1,e.date,e.kind.toUpperCase(),e.cat,e.detail,e.mode,e.amount]));
+  rows.push(['','','','','','','']);
+  rows.push(['SUMMARY','']);
+  rows.push(['Total Income','Rs '+inc]);
+  rows.push(['Total Expense','Rs '+exp]);
+  rows.push(['Net Balance','Rs '+(inc-exp)]);
+  const bd={};rows_data.filter(e=>e.cat==='driver').forEach(e=>{const n=e.detail.split(' · ')[0];bd[n]=(bd[n]||0)+e.amount;});
+  if(Object.keys(bd).length){rows.push(['']);rows.push(['DRIVER-WISE','Amount']);Object.entries(bd).sort((a,b)=>b[1]-a[1]).forEach(([d,a])=>rows.push([d,'Rs '+a]));}
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Expense Report');
+  XLSX.writeFile(wb,`ExpenseReport_${todayStr()}.csv`);
+  showToast('Excel (CSV) downloaded!');
+}
+function exportExpReportPDF(){
+  const rows_data=_getExpRptRows();if(!rows_data.length){showToast('No data');return;}
+  const body=rows_data.map((e,i)=>[i+1,e.date,e.kind.toUpperCase(),e.detail,e.mode,'Rs '+e.amount.toLocaleString()]);
+  const inc=rows_data.filter(e=>e.kind==='income').reduce((a,e)=>a+e.amount,0);
+  const exp=rows_data.filter(e=>e.kind==='expense').reduce((a,e)=>a+e.amount,0);
+  dlPDF('Expense & Income Report',`Income: Rs ${inc.toLocaleString()} | Expense: Rs ${exp.toLocaleString()} | Net: Rs ${(inc-exp).toLocaleString()}`,['Sr','Date','Type','Details','Mode','Amount'],body,`ExpenseReport_${todayStr()}`);
+}
+
+// ── DRIVER SUMMARY EXPORTS ──
+function _getDriverRows(){
+  const from=document.getElementById('dsFrom').value;const to=document.getElementById('dsTo').value;
+  const filterDrv=document.getElementById('dsDriver').value;const filterMode=document.getElementById('dsMode').value;
+  return expEntries.filter(e=>{if(e.kind!=='expense'||e.cat!=='driver')return false;if(from&&e.date<from)return false;if(to&&e.date>to)return false;if(filterDrv&&e.detail.split(' · ')[0]!==filterDrv)return false;if(filterMode&&e.mode!==filterMode)return false;return true;});
+}
+function exportDriverExcel(){
+  const rows_data=_getDriverRows();if(!rows_data.length){showToast('No driver data');return;}
+  const byD={};rows_data.forEach(e=>{const n=e.detail.split(' · ')[0];if(!byD[n])byD[n]={total:0,trips:0};byD[n].total+=e.amount;byD[n].trips++;});
+  const rows=[['Sr','Date','Driver','Remark','Mode','Amount (Rs)']];
+  rows_data.sort((a,b)=>a.date<b.date?-1:1).forEach((e,i)=>rows.push([i+1,e.date,e.detail.split(' · ')[0],e.subDetail||'',e.mode,e.amount]));
+  rows.push(['']);
+  rows.push(['DRIVER-WISE SUMMARY','','']);
+  rows.push(['Driver','Trips','Total (Rs)']);
+  Object.entries(byD).sort((a,b)=>b[1].total-a[1].total).forEach(([d,v])=>rows.push([d,v.trips,'Rs '+v.total]));
+  rows.push(['TOTAL','',rows_data.reduce((a,e)=>a+e.amount,0)]);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Driver Summary');
+  XLSX.writeFile(wb,`DriverSummary_${todayStr()}.csv`);
+  showToast('Excel (CSV) downloaded!');
+}
+function exportDriverPDF(){
+  const rows_data=_getDriverRows();if(!rows_data.length){showToast('No driver data');return;}
+  const byD={};rows_data.forEach(e=>{const n=e.detail.split(' · ')[0];if(!byD[n])byD[n]={total:0,trips:0};byD[n].total+=e.amount;byD[n].trips++;});
+  const body=Object.entries(byD).sort((a,b)=>b[1].total-a[1].total).map(([d,v],i)=>[i+1,d,v.trips,'Rs '+v.total.toLocaleString()]);
+  const total=rows_data.reduce((a,e)=>a+e.amount,0);
+  body.push(['','TOTAL','','Rs '+total.toLocaleString()]);
+  dlPDF('Driver-wise Payment Summary',`Total paid: Rs ${total.toLocaleString()} | ${rows_data.length} transactions`,['Sr','Driver Name','Trips','Total Paid'],body,`DriverSummary_${todayStr()}`);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadAll();
+initDates();
+renderHome();
+populateDriverSelects();
+
+// ═══════════════════════════════════════════════════════
+// BRIDGE for cloud.js (Google login + Firestore sync)
+// ═══════════════════════════════════════════════════════
+function refreshUI(){
+  const scr=['home','works','material','expense','manage'].find(n=>document.getElementById('screen-'+n).classList.contains('active'));
+  const isOn=id=>{const e=document.getElementById(id);return e&&e.classList.contains('active');};
+  if(scr==='home')renderHome();
+  if(scr==='works'){
+    if(document.getElementById('ws-register').style.display==='block'){
+      if(!getWork()){showWsList();}
+      else{renderRegAll();if(isOn('rtp-ledger'))renderLedger();if(isOn('rtp-stock'))renderStock();}
+    }else if(document.getElementById('ws-list').style.display!=='none')renderWorkList();
+  }
+  if(scr==='material'){renderMatToday();if(isOn('mtp-log'))renderMatLog();if(isOn('mtp-report'))renderMatReport();}
+  if(scr==='expense'){populateDriverSelects();renderExpToday();if(isOn('etp-ledger'))renderExpLedger();if(isOn('etp-drivers'))renderDriverSummary();if(isOn('etp-report'))renderExpReport();}
+  if(scr==='manage'){renderDriverList();renderVehicleList();}
+}
+window.RR={
+  getState:()=>({works,mat:matEntries,exp:expEntries,drivers,vehicles}),
+  setState(s){
+    if(s.works)works=s.works;if(s.mat)matEntries=s.mat;if(s.exp)expEntries=s.exp;
+    if(s.drivers)drivers=s.drivers;if(s.vehicles)vehicles=s.vehicles;
+    try{
+      localStorage.setItem(STORAGE_KEYS.works,JSON.stringify(works));
+      localStorage.setItem(STORAGE_KEYS.mat,JSON.stringify(matEntries));
+      localStorage.setItem(STORAGE_KEYS.exp,JSON.stringify(expEntries));
+      localStorage.setItem(STORAGE_KEYS.drivers,JSON.stringify(drivers));
+      localStorage.setItem(STORAGE_KEYS.vehicles,JSON.stringify(vehicles));
+    }catch(e){}
+  },
+  refresh:refreshUI,
+  toast:showToast,
+  clearLocal(){Object.values(STORAGE_KEYS).forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});try{localStorage.removeItem('rca_owner');}catch(e){}},
+  setSyncStatus(st){
+    const p=document.getElementById('syncPill');if(!p)return;
+    const L={synced:'☁ Synced',syncing:'Syncing…',offline:'Offline · saved on phone',error:'Sync error'};
+    p.className='sync-pill '+st;p.textContent=L[st]||st;
+  },
+  showApp(u){
+    document.body.classList.remove('locked');
+    document.getElementById('acctName').textContent=u.displayName||'—';
+    document.getElementById('acctEmail').textContent=u.email||'—';
+    const pic=document.getElementById('acctPic');
+    if(u.photoURL){const img=document.createElement('img');img.src=u.photoURL;img.referrerPolicy='no-referrer';img.id='acctPic';pic.replaceWith(img);}
+    else pic.textContent=(u.displayName||u.email||'?')[0].toUpperCase();
+    document.getElementById('homeSub').textContent='Site management · '+(u.email||'');
+  },
+  showLogin(){document.body.classList.add('locked');RR.setLoginBusy(false);},
+  setLoginBusy(b){const g=document.getElementById('gBtn');g.disabled=b;document.getElementById('gBtnTxt').textContent=b?'Signing in…':'Sign in with Google';if(b)document.getElementById('lgErr').textContent='';},
+  loginError(m){document.getElementById('lgErr').textContent=m;}
+};
+</script>
+<script src="firebase-config.js"></script>
+<script src="js/cloud.js"></script>
+</body>
+</html>

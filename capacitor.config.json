@@ -1,0 +1,13 @@
+{
+  "appId": "com.roadregister.app",
+  "appName": "Plant Site Registers",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": true, "backgroundColor": "#0f1117" },
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["google.com"]
+    }
+  }
+}

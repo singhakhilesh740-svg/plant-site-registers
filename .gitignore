@@ -1,0 +1,5 @@
+node_modules/
+android/
+*.keystore
+*.jks
+google-services.json

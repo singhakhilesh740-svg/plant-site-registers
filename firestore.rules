@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Har user sirf apna data padh/likh sakta hai: users/{uid}/...
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // Admin (aap) sab users ka data padh sakte ho
+    match /{path=**} {
+      allow read: if request.auth != null && request.auth.token.email == "112ce0489@gmail.com";
+    }
+  }
+}
